@@ -1,0 +1,189 @@
+[tool.poetry]
+name = "canary_core"
+# this value is a placeholder; it is updated during the CI job to build the package
+version = "0.0.0"
+description = "Provide a centralized API for accessing data files."
+authors = ["Bryant Finney <bryant.finney@alumni.uah.edu>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<4.0"
+django = "^3.2"
+django-extensions = "*"
+django-filter = ">=2.2.0"
+django-rest-framework = "*"
+djangorestframework-filters = "*"
+drf-yasg = "*"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+darglint = "*"
+flake8 = "*"
+flake8-black = "*"
+flake8-bugbear = "*"
+flake8-docstrings = "*"
+flake8-eradicate = "*"
+flake8-isort = "*"
+flake8-logging-format = "*"
+lxml = "*"                      # required for generating some `mypy` reports
+mypy = "*"
+myst-parser = "^0.15.2"
+neovim = "*"
+pre-commit = "*"
+pydeps = "*"
+pydocstyle = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+sphinx = "^4.2.0"
+sphinx-autobuild = "^2021.3.14"
+sphinx-rtd-theme = "^1.0.0"
+tox = "*"
+types-requests = "*"
+yq = "*"
+
+# TODO: fix this
+[tool.poetry-dynamic-versioning]
+enable = true
+bump = false
+format-jinja = """
+    {%- if distance == 0 -%}
+        {{ serialize_pep440(base) }}
+    {%- elif stage -%}
+        {{ serialize_pep440(base, stage=stage, revision=revision + distance) }}
+    {%- else -%}
+        {{ serialize_pep440(bump_version(base), stage="rc", revision=distance - 1) }}
+    {%- endif -%}
+"""
+style = "pep440"
+
+[build-system]
+# TODO: track the following issue for updating this implementation:
+#   https://github.com/mtkennerly/poetry-dynamic-versioning/issues/39
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.pylint]
+
+[tool.pylint.master]
+ignore-patterns = 'test.*?py,snap_test.*?py,mock.*?.py'
+persistent = "yes"
+unsafe-load-any-extension = "no"
+
+[tool.pylint.messages_control]
+disable = ["duplicate-code", "c-extension-no-member"]
+
+[tool.pylint.reports]
+output-format = "text"
+reports = "yes"
+files-output = "no"
+evaluation = "10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
+
+[tool.pylint.basic]
+good-names = "p,i,j,k,v,f,ex,pk,Run,_,scenario_request_client_initializer,precision_personnel_solution_fields"
+bad-names = "foo,bar,baz,toto,tutu,tata"
+include-naming-hint = "no"
+property-classes = "abc.abstractproperty"
+function-rgx = "[a-z_][a-z0-9_]{2,30}$"
+function-name-hint = "[a-z_][a-z0-9_]{2,30}$"
+variable-rgx = "[a-z_][a-z0-9_]{2,30}$"
+variable-name-hint = "[a-z_][a-z0-9_]{2,30}$"
+const-rgx = "(([A-Z_][A-Z0-9_]*)|(__.*__)|(app_name)|(urlpatterns))$"
+const-name-hint = "(([A-Z_][A-Z0-9_]*)|(__.*__)|(app_name)|(urlpatterns))$"
+attr-rgx = "[a-z_][a-z0-9_]{2,30}$"
+attr-name-hint = "[a-z_][a-z0-9_]{2,30}$"
+argument-rgx = "[a-z_][a-z0-9_]{2,30}$"
+argument-name-hint = "[a-z_][a-z0-9_]{2,30}$"
+class-attribute-rgx = "([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$"
+class-attribute-name-hint = "([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$"
+inlinevar-rgx = "[A-Za-z_][A-Za-z0-9_]*$"
+inlinevar-name-hint = "[A-Za-z_][A-Za-z0-9_]*$"
+class-rgx = "[A-Z_][a-zA-Z0-9]+$"
+class-name-hint = "[A-Z_][a-zA-Z0-9]+$"
+module-rgx = "(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$"
+module-name-hint = "(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$"
+method-rgx = "[a-z_][a-z0-9_]{2,60}$"
+method-name-hint = "[a-z_][a-z0-9_]{2,60}$"
+no-docstring-rgx = "^_"
+docstring-min-length = -1
+
+[tool.pylint.elif]
+max-nested-blocks = 5
+ignore-long-lines = '^\s*(# )?<?https?://\S+>?$'
+single-line-if-stmt = "no"
+no-space-check = "trailing-comma,dict-separator"
+max-module-lines = 1000
+indent-string = '    '
+indent-after-paren = 4
+expected-line-ending-format = "LF"
+
+[tool.pylint.format]
+max-line-length = 120
+ignore-long-lines = '^\s*(# )?<?https?://\S+>?$'
+single-line-if-stmt = "no"
+no-space-check = "trailing-comma,dict-separator"
+max-module-lines = 1000
+indent-string = '    '
+indent-after-paren = 4
+
+[tool.pylint.logging]
+logging-modules = "logging,logger"
+
+[tool.pylint.miscellaneous]
+notes = "FIXME,XXX,TODO"
+
+[tool.pylint.similarities]
+min-similarity-lines = 4
+ignore-comments = "yes"
+ignore-docstrings = "yes"
+ignore-imports = "yes"
+
+[tool.pylint.typecheck]
+ignore-mixin-members = "yes"
+ignored-classes = "optparse.Values,thread._local,_thread._local"
+generated-members = "xml.parsers.expat.ExpatError,socket.gethostname,zmq"
+contextmanager-decorators = "contextlib.contextmanager"
+
+[tool.pylint.variables]
+ignore-mixin-members = "yes"
+ignored-classes = "optparse.Values,thread._local,_thread._local"
+generated-members = "xml.parsers.expat.ExpatError,socket.gethostname,zmq"
+contextmanager-decorators = "contextlib.contextmanager"
+
+[tool.pylint.classes]
+defining-attr-methods = "__init__,__new__,setUp"
+valid-classmethod-first-arg = "cls"
+valid-metaclass-classmethod-first-arg = "mcs"
+exclude-protected = "_meta"
+
+[tool.pylint.design]
+max-args = 5
+ignored-argument-names = "_.*"
+max-locals = 15
+max-returns = 6
+max-branches = 12
+max-statements = 50
+max-parents = 7
+max-attributes = 7
+min-public-methods = 0
+max-public-methods = 20
+max-bool-expr = 5
+
+[tool.pylint.imports]
+deprecated-modules = "regsub,TERMIOS,Bastion,rexec"
+known-third-party = "enchant"
+analyse-fallback-blocks = "no"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=canary_core",
+    "--cov-fail-under=80",
+    "--cov-report=term-missing",
+    "--cov-report=xml:.coverage.xml",
+    "--cov-report=html:htmlcov",
+    "--doctest-modules",
+    "--junit-xml=.junit.xml",
+]
+norecursedirs = [".git", ".venv", ".tox"]
+testpaths = ["canary_core"]

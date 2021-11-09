@@ -1,0 +1,93 @@
+{
+  "dockerComposeFile": ["docker-compose.yml"],
+  "name": "Core API",
+  "postCreateCommand": "chmod +x .devcontainer/post-create-command.sh && . ./.devcontainer/post-create-command.sh",
+  "runServices": ["db", "api", "nginx"],
+  "service": "api",
+  "workspaceFolder": "/workspace/django-canary/core",
+
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "bash",
+        "icon": "terminal-bash"
+      },
+      "zsh": {
+        "path": "zsh"
+      }
+    }
+  },
+
+  "extensions": [
+    "alefragnani.project-manager",
+    "be5invis.toml",
+    "bibhasdn.django-html",
+    "bibhasdn.django-snippets",
+    "bigonesystems.django",
+    "bungcip.better-toml",
+    "christian-kohler.path-intellisense",
+    "coolbear.systemd-unit-file",
+    "cssho.vscode-svgviewer",
+    "DengSir.template-generator-vscode",
+    "donjayamanne.githistory",
+    "DotJoshJohnson.xml",
+    "eamodio.gitlens",
+    "emilast.LogFileHighlighter",
+    "esbenp.prettier-vscode",
+    "felipecaputo.git-project-manager",
+    "formulahendry.docker-explorer",
+    "foxundermoon.shell-format",
+    "GitLab.gitlab-workflow",
+    "hbenl.vscode-test-explorer-liveshare",
+    "hbenl.vscode-test-explorer",
+    "henriiik.docker-linter",
+    "johnpapa.vscode-peacock",
+    "karigari.chat",
+    "mhutchie.git-graph",
+    "ms-azuretools.vscode-docker",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode-remote.remote-ssh-edit",
+    "ms-vscode-remote.remote-ssh",
+    "ms-vscode-remote.remote-wsl",
+    "ms-vscode-remote.vscode-remote-extensionpack",
+    "ms-vsliveshare.vsliveshare-audio",
+    "ms-vsliveshare.vsliveshare-pack",
+    "ms-vsliveshare.vsliveshare",
+    "mtxr.sqltools",
+    "mutantdino.resourcemonitor",
+    "njpwerner.autodocstring",
+    "p1c2u.docker-compose",
+    "ryanluker.vscode-coverage-gutters",
+    "ryu1kn.partial-diff",
+    "Shan.code-settings-sync",
+    "sidneys1.gitconfig",
+    "streetsidesoftware.code-spell-checker",
+    "thebarkman.vscode-djaneiro",
+    "tht13.html-preview-vscode",
+    "tiibun.vscode-docker-ws",
+    "timonwong.shellcheck",
+    "TqrHsn.vscode-docker-registry-explorer",
+    "vscodevim.vim",
+    "waderyan.gitblame",
+    "william-voyek.vscode-nginx",
+    "Zim.vsc-docker"
+  ],
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "src=${localEnv:HOME}/.credentials,dst=/root/.credentials,type=bind,readonly",
+    "src=${localEnv:HOME}/.gitconfig,dst=/root/.gitconfig,type=bind,readonly",
+    "src=${localEnv:HOME}/.git_template,dst=/root/.git_template,type=bind,readonly",
+    "src=${localEnv:HOME}/.p10k.zsh,dst=/root/.p10k.zsh,type=bind,readonly",
+    "src=${localEnv:HOME}/.ssh,dst=/root/.ssh,type=bind,readonly",
+    "src=${localEnv:HOME}/.vim,dst=/root/.vim,type=bind,readonly",
+    "src=${localEnv:HOME}/.vscode/templates,dst=/root/.vscode/templates,type=bind",
+    "src=${localEnv:HOME}/.zprofile,dst=/root/.zprofile,type=bind,readonly",
+    "src=${localEnv:HOME}/.zsh_aliases,dst=/root/.zsh_aliases,type=bind",
+    "src=${localEnv:HOME}/.zshrc,dst=/root/.zshrc,type=bind,readonly",
+    "src=${localEnv:HOME}/powerlevel10k,dst=/root/powerlevel10k,type=bind,readonly"
+  ],
+  "remoteUser": "root"
+}

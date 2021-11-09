@@ -1,0 +1,10 @@
+# -------------------------------------------------------------------------------------
+# Summary: Configure `pydeps` for visualizing dependencies.
+# Created: 2021-10-05 18:56:37
+# Author:  Bryant Finney (https://github.com/bryant-finney)
+# -------------------------------------------------------------------------------------
+[pydeps]
+cluster = True
+max_bacon = 2
+max_cluster_size = 5
+min_cluster_size = 2

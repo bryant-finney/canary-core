@@ -1,0 +1,75 @@
+# -------------------------------------------------------------------------------------
+# Summary: Configure pre-commit hooks.
+# Created: 2021-10-01 17:13:16
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
+# -------------------------------------------------------------------------------------
+
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types: [python]
+
+  - repo: https://github.com/asottile/seed-isort-config
+    rev: v2.2.0
+    hooks:
+      - id: seed-isort-config
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.4.1
+    hooks:
+      - id: prettier
+
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        entry: poetry run isort
+        args: [--settings, .isort.cfg]
+        language: system
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        language: system
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: flake8
+        name: flake8
+        entry: poetry run flake8
+        language: system
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: poetry run pylint
+        args: [--rcfile=pyproject.toml, --exit-zero]
+        language: system
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: pydocstyle
+        name: pydocstyle
+        entry: poetry run pydocstyle
+        language: system
+        types: [python]
+
+  - repo: local
+    hooks:
+      - id: darglint
+        name: darglint
+        entry: poetry run darglint
+        args: [canary_core]
+        language: system
+        types: [python]

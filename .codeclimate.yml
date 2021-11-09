@@ -1,0 +1,101 @@
+version: "2" # required to adjust maintainability checks
+checks:
+  argument-count:
+    config:
+      threshold: 4
+  complex-logic:
+    config:
+      threshold: 4
+  file-lines:
+    config:
+      threshold: 500
+  method-complexity:
+    config:
+      threshold: 5
+  method-count:
+    config:
+      threshold: 20
+  method-lines:
+    config:
+      threshold: 30
+  nested-control-flow:
+    config:
+      threshold: 4
+  return-statements:
+    config:
+      threshold: 4
+
+plugins:
+  pylint:
+    enabled: true
+
+  duplication:
+    enabled: true
+    config:
+      languages: [python]
+
+  radon:
+    enabled: true
+
+exclude_patterns:
+  - "**/__version__.*"
+  - "**/tests/"
+  - "*.bak"
+  - "*.code-workspace"
+  - "*.cover"
+  - "*.egg-info"
+  - "*.pyc"
+  - "*.sqlite3"
+  - "*.svg"
+  - "*.tar"
+  - "*.tar.gz"
+  - ".*.xml"
+  - ".coverage.*"
+  - "config.*"
+  - "data/*"
+  - docs/_build
+  - "logs/*"
+  - "static/*"
+  - "venv*"
+  - .DS_Store
+  - .DS_Store?
+  - .ash_history
+  - .bash_aliases
+  - .bash_history
+  - .bash_profile
+  - .bashrc
+  - .boto
+  - .boto~
+  - .cache
+  - .coverage
+  - .devcontainer
+  - .devcontainer.json
+  - .eggs
+  - .env
+  - .git
+  - .gitconfig
+  - .gitlab
+  - .gnupg
+  - .idea
+  - .profile
+  - .pylint.d
+  - .pytest_cache
+  - .ssh
+  - .untracked
+  - .venv
+  - .vs-liveshare-keychain
+  - .vscode
+  - .vscode-server-insiders
+  - __pycache__
+  - build
+  - build
+  - climate.html
+  - cov
+  - cov-html
+  - coverage
+  - coverage.xml
+  - dist
+  - docs
+  - htmlcov
+  - public
+  - setup.py

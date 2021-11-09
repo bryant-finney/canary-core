@@ -5,8 +5,51 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- test
-sast:
-  stage: test
+  - qa
+  - test
+
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml
+
+.parallel python versions:
+  # jobs that extend this one are executed in parallel for all supported python versions
+  parallel:
+    matrix:
+      - PY_MAJOR: 3
+        PY_MINOR: [7, 8, 9, 10]
+
+sast:
+  # set the pipeline stage of the job included from Security/SAST.gitlab-ci.yml
+  stage: test
+
+code_quality:
+  # upload the job artifacts of the job included from Code-Quality.gitlab-ci.yml
+  stage: qa
+  artifacts:
+    paths: [gl-code-quality-report.json]
+    expire_in: 90 days
+
+code_quality html report:
+  # override the existing job to upload an HTML report
+  stage: qa
+  extends: [code_quality]
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+    paths: [gl-code-quality-report.html]
+    expire_in: 90 days
+
+pre-commit:
+  # use pre-commit to run linters / style checks as an initial quick+dirty QA stage
+  before_script:
+    - pip3 install poetry
+
+    # use the direnv script to setup the environment
+    - chmod +x .envrc && . ./.envrc
+  extends: [.parallel python versions]
+  image: $CI_REGISTRY_IMAGE/python:${PY_MAJOR}.${PY_MINOR}
+
+  needs: []
+  script: [pre-commit run --all]
+  stage: qa
