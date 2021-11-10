@@ -16,39 +16,34 @@ include:
   parallel:
     matrix:
       - PY_MAJOR: 3
-        PY_MINOR:
-          - 7
-          - 8
-          - 9
-          - 10
+        PY_MINOR: [7, 8, 9, 10]
 
 sast:
   stage: test
+  needs: []
 
 code_quality:
   stage: qa
+  needs: []
   artifacts:
-    paths:
-      - gl-code-quality-report.json
+    paths: [gl-code-quality-report.json]
     expire_in: 90 days
 
 code_quality html report:
   stage: qa
-  extends:
-    - code_quality
+  extends: [code_quality]
   variables:
     REPORT_FORMAT: html
   artifacts:
-    paths:
-      - gl-code-quality-report.html
+    paths: [gl-code-quality-report.html]
     expire_in: 90 days
 
 pre-commit:
   before_script:
     - pip3 install poetry
     - chmod +x .envrc && . ./.envrc
-  extends:
-    - ".parallel python versions"
+  extends: [.parallel python versions]
+
   image: "$CI_REGISTRY_IMAGE/python:${PY_MAJOR}.${PY_MINOR}"
   needs: []
   script:
