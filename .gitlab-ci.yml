@@ -5,46 +5,52 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- qa
-- test
+  - qa
+  - test
+
 include:
-- template: Security/SAST.gitlab-ci.yml
-- template: Code-Quality.gitlab-ci.yml
-".parallel python versions":
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml
+
+.parallel python versions:
   parallel:
     matrix:
-    - PY_MAJOR: 3
-      PY_MINOR:
-      - 7
-      - 8
-      - 9
-      - 10
+      - PY_MAJOR: 3
+        PY_MINOR:
+          - 7
+          - 8
+          - 9
+          - 10
+
 sast:
   stage: test
+
 code_quality:
   stage: qa
   artifacts:
     paths:
-    - gl-code-quality-report.json
+      - gl-code-quality-report.json
     expire_in: 90 days
+
 code_quality html report:
   stage: qa
   extends:
-  - code_quality
+    - code_quality
   variables:
     REPORT_FORMAT: html
   artifacts:
     paths:
-    - gl-code-quality-report.html
+      - gl-code-quality-report.html
     expire_in: 90 days
+
 pre-commit:
   before_script:
-  - pip3 install poetry
-  - chmod +x .envrc && . ./.envrc
+    - pip3 install poetry
+    - chmod +x .envrc && . ./.envrc
   extends:
-  - ".parallel python versions"
+    - ".parallel python versions"
   image: "$CI_REGISTRY_IMAGE/python:${PY_MAJOR}.${PY_MINOR}"
   needs: []
   script:
-  - pre-commit run --all
+    - pre-commit run --all
   stage: qa
