@@ -1,0 +1,20 @@
+# -------------------------------------------------------------------------------------
+# Summary: Extend the base `docker-compose` file for development.
+# Created: 2021-11-11 13:16:17
+# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# -------------------------------------------------------------------------------------
+services:
+  db:
+    build:
+      target: dev
+    image: "${DOCKER_IMAGE_PATH}/db:dev-${DOCKER_VERSION_TAG:-latest}"
+
+  api:
+    build:
+      target: dev
+
+    # to run the dev server, set CANARY_CORE_CMD="django-admin runserver"
+    command: "${CANARY_CORE_CMD:-sleep infinity}"
+    image: "${DOCKER_IMAGE_PATH}:dev-${DOCKER_VERSION_TAG:-latest}"
+    volumes:
+      - .:/work
