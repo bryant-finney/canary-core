@@ -88,6 +88,25 @@ build image:
     FULL_LATEST_TAG: $FULL_IMAGE_NAME:$LATEST_TAG
     FULL_COMMIT_TAG: $FULL_IMAGE_NAME:$COMMIT_TAG
 
+build prod image:
+  # build the minimal production image of the API
+  extends: [build image]
+  variables:
+    BUILD_TARGET: prod
+
+build db image:
+  # build the database image
+  extends: [build image]
+  variables:
+    DOCKERFILE_PATH: ./db/Dockerfile
+    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE/db
+
+build prod db image:
+  # build the `prod` db image
+  extends: [build db image]
+  variables:
+    BUILD_TARGET: prod
+
 sast:
   stage: test
   needs: []
