@@ -18,10 +18,6 @@ include:
       - PY_MAJOR: 3
         PY_MINOR: [7, 8, 9, 10]
 
-sast:
-  stage: test
-  needs: []
-
 code_quality:
   stage: qa
   needs: []
@@ -49,3 +45,48 @@ pre-commit:
   script:
     - pre-commit run --all
   stage: qa
+
+build image:
+  # build the image using GitLab's docker-in-docker solution
+  after_script: [docker logout $CI_REGISTRY]
+
+  before_script:
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+
+  image: docker:20.10
+
+  needs: []
+
+  script:
+    - "docker build -t $FULL_LATEST_TAG -f $DOCKERFILE_PATH ."
+
+    - docker push $FULL_LATEST_TAG
+
+    # tag the image by its commit hash
+    - "docker tag $FULL_LATEST_TAG $FULL_COMMIT_TAG"
+    - docker push $FULL_COMMIT_TAG
+
+  services: ["docker:20.10-dind"]
+  stage: build
+
+  variables:
+    DOCKERFILE_PATH: ./api/Dockerfile
+
+    # child jobs may override this variable in order to specify a different image name;
+    #   note: this includes the registry name and image name, but not the version tag
+    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE
+
+    # override this variable to build a different target
+    BUILD_TARGET: dev
+
+    # define version tags for `latest` (floating tag) and the specific commit
+    LATEST_TAG: ${BUILD_TARGET}-latest
+    COMMIT_TAG: ${BUILD_TARGET}-$CI_COMMIT_SHORT_SHA
+
+    # define the full RepoTags for the image
+    FULL_LATEST_TAG: $FULL_IMAGE_NAME:$LATEST_TAG
+    FULL_COMMIT_TAG: $FULL_IMAGE_NAME:$COMMIT_TAG
+
+sast:
+  stage: test
+  needs: []
