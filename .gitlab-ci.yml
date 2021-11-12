@@ -124,7 +124,7 @@ check startup:
     - build db image
 
   script:
-    - django-admin makemigrations >out.txt
+    - django-admin makemigrations
     # if changes to the models defined by this project result in a migration, this step
     #   will fail
     - git diff --exit-code
