@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------
 # Summary: Configure `pydeps` for visualizing dependencies.
 # Created: 2021-10-05 18:56:37
-# Author:  Bryant Finney (https://github.com/bryant-finney)
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
 [pydeps]
 cluster = True

@@ -3,7 +3,7 @@
 # -------------------------------------------------------------------------------------
 # Summary: Peform standard initialization commands using the entrypoint script.
 # Created: 2021-11-10 21:31:17
-# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------

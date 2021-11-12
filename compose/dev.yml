@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------
 # Summary: Extend the base `docker-compose` file for development.
 # Created: 2021-11-11 13:16:17
-# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
 services:
   db:

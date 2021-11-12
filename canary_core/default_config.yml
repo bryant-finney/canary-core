@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------
 # Summary: Provide default configuration settings for local development.
 # Created: 2021-11-11 20:02:48
-# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
 CANARY_CORE_ALLOWED_HOSTS:
   - localhost

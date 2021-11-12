@@ -3,7 +3,7 @@
 # -------------------------------------------------------------------------------------
 # Summary: Install system dependencies to `alpine` images.
 # Created: 2021-11-10 20:28:59
-# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
 #
 # Usage:
 #   To install the minimal system dependencies:
