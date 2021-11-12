@@ -95,3 +95,7 @@ tags
 # deployment files
 /static/
 .python-version
+.local
+.tags
+.vscode-ctags
+out.txt

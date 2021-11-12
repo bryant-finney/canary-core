@@ -4,8 +4,19 @@
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+variables:
+  POSTGRES_DB:
+    description: Set the name of the postgres database to use for tests
+    value: test
+  POSTGRES_PASSWORD:
+    description: This value is masked and controls access to the test database
+  POSTGRES_USER:
+    description: Name the DB account by this value
+    value: django
+
 stages:
   - qa
+  - build
   - test
 
 include:
@@ -17,10 +28,6 @@ include:
     matrix:
       - PY_MAJOR: 3
         PY_MINOR: [7, 8, 9, 10]
-
-sast:
-  stage: test
-  needs: []
 
 code_quality:
   stage: qa
@@ -49,3 +56,101 @@ pre-commit:
   script:
     - pre-commit run --all
   stage: qa
+
+build image:
+  # build the image using GitLab's docker-in-docker solution
+  after_script: [docker logout $CI_REGISTRY]
+
+  before_script:
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+
+  image: docker:20.10
+
+  needs: []
+
+  script:
+    - docker build -t $FULL_LATEST_TAG --target $BUILD_TARGET -f $DOCKERFILE_PATH .
+
+    - docker push $FULL_LATEST_TAG
+
+    # tag the image by its commit hash
+    - "docker tag $FULL_LATEST_TAG $FULL_COMMIT_TAG"
+    - docker push $FULL_COMMIT_TAG
+
+  services: ["docker:20.10-dind"]
+  stage: build
+
+  variables:
+    DOCKERFILE_PATH: ./api/Dockerfile
+
+    # child jobs may override this variable in order to specify a different image name;
+    #   note: this includes the registry name and image name, but not the version tag
+    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE
+
+    # override this variable to build a different target
+    BUILD_TARGET: dev
+
+    # define version tags for `latest` (floating tag) and the specific commit
+    LATEST_TAG: ${BUILD_TARGET}-latest
+    COMMIT_TAG: ${BUILD_TARGET}-$CI_COMMIT_SHORT_SHA
+
+    # define the full RepoTags for the image
+    FULL_LATEST_TAG: $FULL_IMAGE_NAME:$LATEST_TAG
+    FULL_COMMIT_TAG: $FULL_IMAGE_NAME:$COMMIT_TAG
+
+build prod image:
+  # build the minimal production image of the API
+  extends: [build image]
+  variables:
+    BUILD_TARGET: prod
+
+build db image:
+  # build the database image
+  extends: [build image]
+  variables:
+    DOCKERFILE_PATH: ./db/Dockerfile
+    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE/db
+
+build prod db image:
+  # build the `prod` db image
+  extends: [build db image]
+  variables:
+    BUILD_TARGET: prod
+
+sast:
+  stage: test
+  needs: []
+
+check startup:
+  # verify that no migrations were missed, migrations can be performed, and that a test
+  #   user can be created
+  image:
+    name: $CI_REGISTRY_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+    # override the entrypoint for this CI job
+    entrypoint: [""]
+
+  needs:
+    - build image
+    - build db image
+
+  script:
+    - django-admin makemigrations
+    # if changes to the models defined by this project result in a migration, this step
+    #   will fail
+    - git diff --exit-code
+    - django-admin migrate --no-input
+    - django-admin collectstatic --no-input
+    - django-admin createsuperuser --no-input --username gitlab-runner --email gitlab-runner@junk.com
+
+  services:
+    - name: $CI_REGISTRY_IMAGE/db:dev-$CI_COMMIT_SHORT_SHA
+      alias: db
+  stage: test
+  variables:
+    CANARY_CORE_DB_HOST: db
+    CANARY_CORE_DB_NAME: $POSTGRES_DB
+    CANARY_CORE_DB_PASSWORD: $POSTGRES_PASSWORD
+    CANARY_CORE_DB_USER: $POSTGRES_USER
+    POSTGRES_DB: $POSTGRES_DB
+    POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    POSTGRES_USER: $POSTGRES_USER
