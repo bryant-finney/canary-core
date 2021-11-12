@@ -8,6 +8,8 @@ services:
     build:
       target: dev
     image: "${DOCKER_IMAGE_PATH}/db:dev-${DOCKER_VERSION_TAG:-latest}"
+    # occupy `localhost:5432` during development
+    ports: [5432:5432]
 
   api:
     build:
