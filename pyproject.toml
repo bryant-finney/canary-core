@@ -43,6 +43,8 @@ sphinx-rtd-theme = "^1.0.0"
 tox = "*"
 types-requests = "*"
 yq = "*"
+types-PyYAML = "*"
+types-setuptools = "*"
 
 # TODO: fix this
 [tool.poetry-dynamic-versioning]
