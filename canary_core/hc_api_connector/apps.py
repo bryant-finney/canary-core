@@ -5,6 +5,7 @@
 """
 # django packages
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class HCAPIConnectorConfig(AppConfig):
@@ -12,3 +13,4 @@ class HCAPIConnectorConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "canary_core.hc_api_connector"
+    verbose_name = _("HouseCanary API Connector")
