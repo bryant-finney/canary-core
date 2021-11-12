@@ -97,12 +97,6 @@ build prod image:
 build db image:
   # build the database image
   extends: [build image]
-  rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event" && $CI_PIPELINE_SOURCE != "schedule"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "schedule"
-      changes:
-        - "db/**"
   variables:
     DOCKERFILE_PATH: ./db/Dockerfile
     FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE/db
