@@ -59,7 +59,7 @@ build image:
   needs: []
 
   script:
-    - "docker build -t $FULL_LATEST_TAG -f $DOCKERFILE_PATH ."
+    - docker build -t $FULL_LATEST_TAG --target $BUILD_TARGET -f $DOCKERFILE_PATH .
 
     - docker push $FULL_LATEST_TAG
 
