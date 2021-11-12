@@ -114,7 +114,11 @@ sast:
 check startup:
   # verify that no migrations were missed, migrations can be performed, and that a test
   #   user can be created
-  image: $CI_REGISTRY_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+  image:
+    name: $CI_REGISTRY_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+    # override the entrypoint for this CI job
+    entrypoint: [""]
+
   needs:
     - build image
     - build db image
