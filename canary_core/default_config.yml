@@ -1,0 +1,57 @@
+# -------------------------------------------------------------------------------------
+# Summary: Provide default configuration settings for local development.
+# Created: 2021-11-11 20:02:48
+# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# -------------------------------------------------------------------------------------
+CANARY_CORE_ALLOWED_HOSTS:
+  - localhost
+  - "0.0.0.0"
+  - "127.0.0.1"
+  - "api"
+
+CANARY_CORE_DB_HOST: db
+CANARY_CORE_DB_NAME: local
+CANARY_CORE_DB_USER: django
+CANARY_CORE_DB_PORT: 5432
+CANARY_CORE_DEBUG: true
+
+CANARY_CORE_INSTALLED_APPS:
+  - django.contrib.admin
+  - django.contrib.admindocs
+  - django.contrib.auth
+  - django.contrib.contenttypes
+  - django.contrib.sessions
+  - django.contrib.messages
+  - django.contrib.sites
+  - django.contrib.staticfiles
+  - django_filters
+  - rest_framework
+  - drf_yasg
+  - django_extensions
+
+CANARY_CORE_MIDDLEWARE:
+  - django.middleware.security.SecurityMiddleware
+  - django.contrib.sessions.middleware.SessionMiddleware
+  - django.middleware.common.CommonMiddleware
+  - django.middleware.csrf.CsrfViewMiddleware
+  - django.contrib.auth.middleware.AuthenticationMiddleware
+  - django.contrib.messages.middleware.MessageMiddleware
+  - django.middleware.clickjacking.XFrameOptionsMiddleware
+
+CANARY_CORE_ROOT_URLCONF: canary_core.urls
+
+# NOTE: this value should not be used in a production environment
+CANARY_CORE_SECRET_KEY: django-insecure-e#_1=3(cxd&85@q9%ck@i+&0=kn#)8p1lafhul3grbcrzwen8z
+CANARY_CORE_SITE_ID: 1
+CANARY_CORE_STATIC_ROOT: static/canary_core
+
+CANARY_CORE_TEMPLATES:
+  - BACKEND: django.template.backends.django.DjangoTemplates
+    DIRS: []
+    APP_DIRS: true
+    OPTIONS:
+      context_processors:
+        - django.template.context_processors.debug
+        - django.template.context_processors.request
+        - django.contrib.auth.context_processors.auth
+        - django.contrib.messages.context_processors.messages

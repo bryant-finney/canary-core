@@ -8,15 +8,16 @@ authors = ["Bryant Finney <bryant.finney@alumni.uah.edu>"]
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
 django = "^3.2"
-django-extensions = "*"
 django-filter = ">=2.2.0"
-django-rest-framework = "*"
-djangorestframework-filters = "*"
+djangorestframework = "*"
 drf-yasg = "*"
+PyYAML = "*"
+psycopg2 = "*"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
 darglint = "*"
+django-extensions = "*"
 flake8 = "*"
 flake8-black = "*"
 flake8-bugbear = "*"
@@ -24,6 +25,7 @@ flake8-docstrings = "*"
 flake8-eradicate = "*"
 flake8-isort = "*"
 flake8-logging-format = "*"
+ipython = "*"
 lxml = "*"                      # required for generating some `mypy` reports
 mypy = "*"
 myst-parser = "^0.15.2"
@@ -41,6 +43,8 @@ sphinx-rtd-theme = "^1.0.0"
 tox = "*"
 types-requests = "*"
 yq = "*"
+types-PyYAML = "*"
+types-setuptools = "*"
 
 # TODO: fix this
 [tool.poetry-dynamic-versioning]

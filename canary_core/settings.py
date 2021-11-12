@@ -11,73 +11,98 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from __future__ import annotations
 
 # stdlib
+import itertools
+import json
+import logging
+import os
+from distutils.util import strtobool
 from pathlib import Path
+from typing import Any, Callable, Optional
+
+# third party
+import pkg_resources as pr
+import yaml
+
+logger = logging.getLogger(
+    __name__ if __name__ != "__main__" else "canary_core.settings"
+)
+
+sentinel = object()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(pr.resource_filename("canary_core", "")).parent.parent
+
+defaults_fname = Path(pr.resource_filename("canary_core", "default_config.yml"))
+with open(defaults_fname, "r", encoding="utf-8") as f:
+    config: dict[str, Any] = yaml.safe_load(f)
+
+loader_map: dict[str, Callable] = {"yml": yaml.safe_load, "json": json.load}
+for path, ext in itertools.product([Path.cwd(), Path.home()], loader_map.keys()):
+    CONFIG_FILENAME: Optional[Path] = path / f"config.{ext}"
+    load_config = loader_map[ext]
+    try:
+        with open(CONFIG_FILENAME, "r", encoding="utf-8") as f:
+            config.update(load_config(f))
+    except FileNotFoundError:
+        logger.debug("no file %s", CONFIG_FILENAME)
+        CONFIG_FILENAME = None
+    else:
+        logger.info("using config file: %s", CONFIG_FILENAME)
+        break
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-e#_1=3(cxd&85@q9%ck@i+&0=kn#)8p1lafhul3grbcrzwen8z"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS: list[str] = []
+if not CONFIG_FILENAME:
+    logger.warning(
+        "no config file found in '%s' or '%s'; using defaults",
+        Path.cwd(),
+        Path.home(),
+    )
 
 
-# Application definition
+def get_conf(
+    key: str,
+    default: Optional[Any] = None,
+    prefix: str = "CANARY_CORE",
+) -> Any:
+    """Get the configuration setting from the config dict, applying the prefix.
 
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-]
+    Args:
+        key (str): the config setting name, with or without the ``CANARY_CORE`` prefix
+        default (Optional[Any]): the default value to use if no config value exists
+        prefix (str): prepend this value to the environment variable key; defaults to
+            `CANARY_CORE`
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
-
-ROOT_URLCONF = "canary_core.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = "canary_core.wsgi.application"
+    Returns:
+        Any: the value of the config option, or ``default`` if undefined
+    """
+    varname = key if key.startswith(prefix) else "_".join((prefix.rstrip("_"), key))
+    env_val: str | object = os.environ.get(varname, sentinel)
+    if env_val is not sentinel:
+        try:
+            return json.loads(str(env_val))
+        except json.JSONDecodeError:
+            return env_val
+    return config.get(varname, default)
 
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+SECRET_KEY = get_conf("SECRET_KEY")
+DEBUG = strtobool(str(get_conf("DEBUG")).lower())
+ALLOWED_HOSTS: list[str] = get_conf("ALLOWED_HOSTS")
+INSTALLED_APPS = get_conf("INSTALLED_APPS")
+MIDDLEWARE = get_conf("MIDDLEWARE")
+ROOT_URLCONF = get_conf("ROOT_URLCONF", "canary_core.urls")
+TEMPLATES = get_conf("TEMPLATES")
+WSGI_APPLICATION = get_conf("WSGI_APPLICATION", default="canary_core.wsgi.application")
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": get_conf("DB_HOST"),
+        "NAME": get_conf("DB_NAME"),
+        "OPTIONS": {"application_name": "odlsecure_api"},
+        "PASSWORD": get_conf("DB_PASSWORD"),
+        "PORT": int(get_conf("DB_PORT")),
+        "USER": get_conf("DB_USER"),
     }
 }
 
@@ -98,19 +123,16 @@ AUTH_PASSWORD_VALIDATORS = [{"NAME": val} for val in validators]
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
+SITE_ID = int(get_conf("SITE_ID", default="1"))
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+STATIC_ROOT = get_conf("STATIC_ROOT")
 STATIC_URL = "/static/"
 
 # Default primary key field type
