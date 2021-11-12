@@ -110,3 +110,24 @@ build prod db image:
 sast:
   stage: test
   needs: []
+
+check startup:
+  # verify that no migrations were missed, migrations can be performed, and that a test
+  #   user can be created
+  image: $CI_REGISTRY_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+  needs:
+    - build image
+    - build db image
+
+  script:
+    - django-admin makemigrations >out.txt
+    # if changes to the models defined by this project result in a migration, this step
+    #   will fail
+    - git diff --exit-code
+    - django-admin migrate --no-input
+    - django-admin collectstatic --no-input
+    - django-admin createsuperuser --username gitlab-runner --email gitlab-runner@junk.com
+
+  services:
+    - name: $CI_REGISTRY_IMAGE/db:dev-$CI_COMMIT_SHORT_SHA
+  stage: test
