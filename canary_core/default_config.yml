@@ -27,7 +27,7 @@ CANARY_CORE_INSTALLED_APPS:
   - django_filters
   - rest_framework
   - drf_yasg
-  - django_extensions
+  - canary_core.hc_api_connector
 
 CANARY_CORE_MIDDLEWARE:
   - django.middleware.security.SecurityMiddleware
