@@ -36,7 +36,11 @@ defaults_fname = Path(pr.resource_filename("canary_core", "default_config.yml"))
 with open(defaults_fname, "r", encoding="utf-8") as f:
     config: dict[str, Any] = yaml.safe_load(f)
 
-loader_map: dict[str, Callable] = {"yml": yaml.safe_load, "json": json.load}
+loader_map: dict[str, Callable] = {
+    "yml": yaml.safe_load,
+    "yaml": yaml.safe_load,
+    "json": json.load,
+}
 for path, ext in itertools.product([Path.cwd(), Path.home()], loader_map.keys()):
     CONFIG_FILENAME: Optional[Path] = path / f"config.{ext}"
     load_config = loader_map[ext]
@@ -99,7 +103,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": get_conf("DB_HOST"),
         "NAME": get_conf("DB_NAME"),
-        "OPTIONS": {"application_name": "odlsecure_api"},
+        "OPTIONS": {"application_name": "canary_core"},
         "PASSWORD": get_conf("DB_PASSWORD"),
         "PORT": int(get_conf("DB_PORT")),
         "USER": get_conf("DB_USER"),
@@ -139,3 +143,5 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = get_conf("REST_FRAMEWORK")

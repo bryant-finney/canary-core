@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 # stdlib
 import os
 
-# third party
+# django packages
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "canary_core.settings")

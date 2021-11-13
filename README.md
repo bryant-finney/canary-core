@@ -1,16 +1,23 @@
-# `core`
+# `canary_core`
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://gitlab.com/django-canary/core.git)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/bryant-finney/canary-core)
 
-Define the `core` Django application for interfacing with the HouseCanary API.
+Define the `canary_core` Django project for interfacing with the HouseCanary API. This
+project provides a custom Django app for interacting with third-party APIs providing
+property data: [`canary_core.hc_api_connector`](canary_core/hc_api_connector/apps.py)
 
 ## System Dependencies
+
+Two development strategies are supported by this project: container-based development
+using Docker, or bare-metal development from a virtual environment. The former requires
+minimal system dependencies; however, it requires additional IDE configuration steps
+for PyCharm and VSCode, which are not covered here.
 
 When developing from a virtual environment, the following system dependencies are
 recommended:
 
 - [`docker`](https://docs.docker.com/desktop/mac/install/)
-  - alternatively, all optional dependencies (except `direnv` and `tox`) can be
+  - alternatively, all optional dependencies (except `direnv` and `tox`) must be
     installed to support this application
 - [`docker-compose`](https://docs.docker.com/compose/install/)
   - Docker Desktop for `macOS` and `Windows` provide the Docker Compose CLI; this may
@@ -29,6 +36,23 @@ recommended:
 - (optional) [`tox`](https://tox.wiki/en/latest/install.html)
   - `tox` is used to run the test suite using multiple `python` interpreter versions;
     it works best with [`pyenv`](https://github.com/pyenv/pyenv#installation)
+
+## Production Setup
+
+This project manages Docker images for its API and database layers; accordingly,
+multiple frameworks can be used to orchestrate the containers.
+
+Demo on a single system:
+
+1. Download [`docker-compose.yml`](./docker-compose.yml) and [`base.env`](./base.env)
+2. Rename `base.env` ⇨ `.env`
+3. Launch the app by calling `docker-compose up`
+4. Navigate to [localhost:8000](http://localhost:8000/) to use the app
+
+## Development Setup
+
+After selecting a development strategy and installing necessary dependencies, see the
+following steps for completing the environment setup.
 
 ---
 

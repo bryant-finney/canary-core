@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------
 # Summary: Provide default configuration settings for local development.
 # Created: 2021-11-11 20:02:48
-# Author:  Bryant Finney <finneybp@gmail.com> (https://bryant-finney.github.io/about)
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
 CANARY_CORE_ALLOWED_HOSTS:
   - localhost
@@ -27,7 +27,7 @@ CANARY_CORE_INSTALLED_APPS:
   - django_filters
   - rest_framework
   - drf_yasg
-  - django_extensions
+  - canary_core.hc_api_connector
 
 CANARY_CORE_MIDDLEWARE:
   - django.middleware.security.SecurityMiddleware
@@ -37,6 +37,24 @@ CANARY_CORE_MIDDLEWARE:
   - django.contrib.auth.middleware.AuthenticationMiddleware
   - django.contrib.messages.middleware.MessageMiddleware
   - django.middleware.clickjacking.XFrameOptionsMiddleware
+
+CANARY_CORE_REST_FRAMEWORK:
+  DEFAULT_AUTHENTICATION_CLASSES:
+    - rest_framework.authentication.SessionAuthentication
+    - rest_framework.authentication.TokenAuthentication
+
+  DEFAULT_FILTER_BACKENDS: ["django_filters.rest_framework.DjangoFilterBackend"]
+  DEFAULT_PAGINATION_CLASS: "rest_framework.pagination.LimitOffsetPagination"
+  DEFAULT_PARSER_CLASSES:
+    - rest_framework.parsers.JSONParser
+    - rest_framework.parsers.FormParser
+    - rest_framework.parsers.MultiPartParser
+
+  DEFAULT_PERMISSIONS_CLASS: ["rest_framework.permissions.isAuthenticated"]
+  DEFAULT_RENDERER_CLASSES:
+    - rest_framework.renderers.JSONRenderer
+    - rest_framework.renderers.BrowsableAPIRenderer
+  PAGE_SIZE: 100
 
 CANARY_CORE_ROOT_URLCONF: canary_core.urls
 
