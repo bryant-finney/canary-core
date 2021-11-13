@@ -2,7 +2,7 @@
   "dockerComposeFile": ["docker-compose.yml"],
   "name": "Core API",
   "postCreateCommand": "chmod +x .devcontainer/post-create-command.sh && . ./.devcontainer/post-create-command.sh",
-  "runServices": ["db", "api", "nginx"],
+  "runServices": ["db", "api"],
   "service": "api",
   "workspaceFolder": "/workspace/django-canary/core",
 
