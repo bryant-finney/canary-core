@@ -145,6 +145,7 @@ check startup:
   services:
     - name: $CI_REGISTRY_IMAGE/db:dev-$CI_COMMIT_SHORT_SHA
       alias: db
+
   stage: test
   variables:
     CANARY_CORE_DB_HOST: db
@@ -154,3 +155,22 @@ check startup:
     POSTGRES_DB: $POSTGRES_DB
     POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     POSTGRES_USER: $POSTGRES_USER
+
+tox:
+  # run the test suite on each supported Python version
+
+  extends: # extend `pre-commit` for the `before_script`, parallel matrix, and image
+    - pre-commit
+
+  # not strictly needed; however, if check startup fails, `pytest` will likely fail as
+  #   well; so reduce the CI load where practical
+  needs: [check startup]
+  script: [pytest]
+
+  # keep the CI configuration DRY by referencing the previous job definition
+  services: !reference [check startup, services]
+
+  stage: test
+
+  # keep the CI configuration DRY by referencing the previous job definition
+  variables: !reference [check startup, variables]
