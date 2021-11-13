@@ -170,7 +170,10 @@ tox:
   #   well; so reduce the CI load where practical
   needs: [check startup]
 
-  script: [pytest]
+  script:
+    # export CI variables for `pytest`
+    - export $(printenv | grep CANARY_CORE | xargs)
+    - pytest
 
   # keep the CI configuration DRY by referencing the previous job definition
   services: !reference [check startup, services]
