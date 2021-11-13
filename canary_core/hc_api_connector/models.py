@@ -89,9 +89,7 @@ class BasicAPIClient(models.Model):
             Response: the response object from the GET request.
         """
         return requests.get(
-            url="/".join(
-                [str(self.host).removesuffix("/"), str(self.path).removeprefix("/")]
-            ),
+            url="/".join([str(self.host).rstrip("/"), str(self.path).lstrip("/")]),
             params=params,
             auth=self.AuthClass(self.credential_id, self.credential_secret),
         )
