@@ -13,6 +13,7 @@ djangorestframework = "*"
 drf-yasg = "*"
 PyYAML = "*"
 psycopg2 = "*"
+gunicorn = "*"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
@@ -36,15 +37,18 @@ pydocstyle = "*"
 pylint = "*"
 pytest = "*"
 pytest-cov = "*"
+pytest-django = "*"
+pytest-env = "*"
 pytest-mock = "*"
 sphinx = "^4.2.0"
 sphinx-autobuild = "^2021.3.14"
 sphinx-rtd-theme = "^1.0.0"
 tox = "*"
-types-requests = "*"
-yq = "*"
 types-PyYAML = "*"
+types-requests = "*"
 types-setuptools = "*"
+yq = "*"
+
 
 # TODO: fix this
 [tool.poetry-dynamic-versioning]
@@ -178,16 +182,3 @@ max-bool-expr = 5
 deprecated-modules = "regsub,TERMIOS,Bastion,rexec"
 known-third-party = "enchant"
 analyse-fallback-blocks = "no"
-
-[tool.pytest.ini_options]
-addopts = [
-    "--cov=canary_core",
-    "--cov-fail-under=80",
-    "--cov-report=term-missing",
-    "--cov-report=xml:.coverage.xml",
-    "--cov-report=html:htmlcov",
-    "--doctest-modules",
-    "--junit-xml=.junit.xml",
-]
-norecursedirs = [".git", ".venv", ".tox"]
-testpaths = ["canary_core"]

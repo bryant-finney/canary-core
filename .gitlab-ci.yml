@@ -1,13 +1,12 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+# -------------------------------------------------------------------------------------
+# Summary: Define the main CI/CD pipeline for this project.
+# Created: 2021-11-13 11:35:08
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
+# -------------------------------------------------------------------------------------
 variables:
   POSTGRES_DB:
     description: Set the name of the postgres database to use for tests
-    value: test
+    value: canary
   POSTGRES_PASSWORD:
     description: This value is masked and controls access to the test database
   POSTGRES_USER:
@@ -63,18 +62,22 @@ build image:
 
   before_script:
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker pull $FULL_LATEST_TAG || echo "failed to pull image $FULL_LATEST_TAG"
 
   image: docker:20.10
 
   needs: []
 
   script:
-    - docker build -t $FULL_LATEST_TAG --target $BUILD_TARGET -f $DOCKERFILE_PATH .
+    - >
+      docker build \
+        --tag $FULL_COMMIT_TAG \
+        --tag $FULL_LATEST_TAG \
+        --cache-from $FULL_LATEST_TAG \
+        --target $BUILD_TARGET \
+        --file $DOCKERFILE_PATH .
 
     - docker push $FULL_LATEST_TAG
-
-    # tag the image by its commit hash
-    - "docker tag $FULL_LATEST_TAG $FULL_COMMIT_TAG"
     - docker push $FULL_COMMIT_TAG
 
   services: ["docker:20.10-dind"]
@@ -145,7 +148,9 @@ check startup:
   services:
     - name: $CI_REGISTRY_IMAGE/db:dev-$CI_COMMIT_SHORT_SHA
       alias: db
+
   stage: test
+
   variables:
     CANARY_CORE_DB_HOST: db
     CANARY_CORE_DB_NAME: $POSTGRES_DB
@@ -154,3 +159,39 @@ check startup:
     POSTGRES_DB: $POSTGRES_DB
     POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     POSTGRES_USER: $POSTGRES_USER
+
+tox:
+  # run the test suite on each supported Python version
+
+  before_script:
+    - pip3 install poetry
+    - poetry install --no-interaction
+
+  extends: [.parallel python versions]
+
+  image: "$CI_REGISTRY_IMAGE/python:${PY_MAJOR}.${PY_MINOR}"
+
+  # NOTE: this is needed for the referenced services property
+  needs: [build db image]
+
+  script:
+    - pytest
+
+  # keep the CI configuration DRY by referencing the previous job definition
+  services: !reference [check startup, services]
+
+  stage: test
+
+  # NOTE: the variables here should include all variables from `check startup` (above)
+  variables:
+    CANARY_CORE_DB_HOST:
+      !reference [check startup, variables, CANARY_CORE_DB_HOST]
+    CANARY_CORE_DB_NAME: $POSTGRES_DB
+    CANARY_CORE_DB_PASSWORD: $POSTGRES_PASSWORD
+    CANARY_CORE_DB_USER: $POSTGRES_USER
+    POSTGRES_DB: $POSTGRES_DB
+    POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    POSTGRES_USER: $POSTGRES_USER
+
+    # install to the system, since we're inside a Docker container
+    POETRY_VIRTUALENVS_CREATE: "false"

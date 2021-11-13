@@ -1,0 +1,20 @@
+# -------------------------------------------------------------------------------------
+# Summary: Define configuration settings for development.
+# Created: 2021-11-12 14:52:03
+# Author:  Bryant Finney (https://bryant-finney.github.io/about)
+# -------------------------------------------------------------------------------------
+
+CANARY_CORE_INSTALLED_APPS:
+  - django.contrib.admin
+  - django.contrib.admindocs
+  - django.contrib.auth
+  - django.contrib.contenttypes
+  - django.contrib.sessions
+  - django.contrib.messages
+  - django.contrib.sites
+  - django.contrib.staticfiles
+  - django_filters
+  - rest_framework
+  - drf_yasg
+  - django_extensions
+  - canary_core.hc_api_connector
