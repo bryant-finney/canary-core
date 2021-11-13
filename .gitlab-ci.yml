@@ -171,7 +171,8 @@ tox:
 
   image: "$CI_REGISTRY_IMAGE/python:${PY_MAJOR}.${PY_MINOR}"
 
-  needs: []
+  # NOTE: this is needed for the referenced services property
+  needs: [build db image]
 
   script:
     - pytest
