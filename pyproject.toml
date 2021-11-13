@@ -45,6 +45,7 @@ types-requests = "*"
 yq = "*"
 types-PyYAML = "*"
 types-setuptools = "*"
+pytest-django = "*"
 
 # TODO: fix this
 [tool.poetry-dynamic-versioning]
@@ -179,15 +180,3 @@ deprecated-modules = "regsub,TERMIOS,Bastion,rexec"
 known-third-party = "enchant"
 analyse-fallback-blocks = "no"
 
-[tool.pytest.ini_options]
-addopts = [
-    "--cov=canary_core",
-    "--cov-fail-under=80",
-    "--cov-report=term-missing",
-    "--cov-report=xml:.coverage.xml",
-    "--cov-report=html:htmlcov",
-    "--doctest-modules",
-    "--junit-xml=.junit.xml",
-]
-norecursedirs = [".git", ".venv", ".tox"]
-testpaths = ["canary_core"]

@@ -1022,6 +1022,21 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
 
 [[package]]
+name = "pytest-django"
+version = "4.4.0"
+description = "A Django plugin for pytest."
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+pytest = ">=5.4.0"
+
+[package.extras]
+docs = ["sphinx", "sphinx-rtd-theme"]
+testing = ["django", "django-configurations (>=2.0)"]
+
+[[package]]
 name = "pytest-mock"
 version = "3.6.1"
 description = "Thin-wrapper around the mock package for easier use with pytest"
@@ -1476,7 +1491,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "803d76482287c5458c5a1e57a38cc87e0d891d5d1567fbe25363a26981eccfe7"
+content-hash = "aa540f25536fc23853aaccf6183ff0946d856a3fae9fc48ffb5f60e56cdccaab"
 
 [metadata.files]
 alabaster = [
@@ -2097,6 +2112,10 @@ pytest = [
 pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
+]
+pytest-django = [
+    {file = "pytest-django-4.4.0.tar.gz", hash = "sha256:b5171e3798bf7e3fc5ea7072fe87324db67a4dd9f1192b037fed4cc3c1b7f455"},
+    {file = "pytest_django-4.4.0-py3-none-any.whl", hash = "sha256:65783e78382456528bd9d79a35843adde9e6a47347b20464eb2c885cb0f1f606"},
 ]
 pytest-mock = [
     {file = "pytest-mock-3.6.1.tar.gz", hash = "sha256:40217a058c52a63f1042f0784f62009e976ba824c418cced42e88d5f40ab0e62"},
