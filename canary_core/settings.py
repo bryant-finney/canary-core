@@ -103,7 +103,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": get_conf("DB_HOST"),
         "NAME": get_conf("DB_NAME"),
-        "OPTIONS": {"application_name": "odlsecure_api"},
+        "OPTIONS": {"application_name": "canary_core"},
         "PASSWORD": get_conf("DB_PASSWORD"),
         "PORT": int(get_conf("DB_PORT")),
         "USER": get_conf("DB_USER"),
