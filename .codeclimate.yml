@@ -27,7 +27,8 @@ checks:
 
 plugins:
   pylint:
-    enabled: true
+    # enabled: true
+    enabled: false
 
   duplication:
     enabled: true
