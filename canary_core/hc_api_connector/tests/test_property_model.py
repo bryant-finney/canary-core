@@ -38,10 +38,12 @@ def property_record(
         Property: the property record for use in tests; it is deleted after the tests
     """
     prop, _ = Property.objects.get_or_create(
-        defaults=dict(
-            identifier=query_params,
-        )
-        | PROPERTY_DEFAULTS,
+        defaults={
+            **dict(
+                identifier=query_params,
+            ),
+            **PROPERTY_DEFAULTS,
+        },
         apiclient=mock_api_client,
     )
 
