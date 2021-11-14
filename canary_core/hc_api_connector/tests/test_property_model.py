@@ -69,3 +69,26 @@ def test_property_fetch(property_record: Property) -> None:
     assert "result" in resp_data
     assert "property" in resp_data["result"]
     assert "assessment" in resp_data["result"]
+
+
+def compare_dicts(d1: dict[Any, Any], d2: dict[Any, Any]) -> None:
+    """Recursively assert equality for both dictionaries.
+
+    Args:
+        d1 (dict[Any, Any]): the first dictionary to compare
+        d2 (dict[Any, Any]): the second
+    """
+    assert sorted(d1.keys()) == sorted(d2.keys())
+    for k, v in d1.items():
+        if hasattr(v, "items"):
+            compare_dicts(v, d2[k])
+            continue
+        assert v == d2[k]
+
+
+def test_property_fetch_data(
+    property_record: Property, mock_api_response_data: dict[str, Any]
+) -> None:
+    """Verify the response data of :func:`Property.fetch()` from the mock API."""
+    resp_data = property_record.fetch().json()
+    compare_dicts(resp_data, mock_api_response_data)
