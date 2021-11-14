@@ -6,13 +6,15 @@
 from __future__ import annotations
 
 # stdlib
+import json
 import logging
 from base64 import b64decode
 from pathlib import Path
-from typing import Iterator
+from typing import Any, Iterator
 
 # django packages
-from django.utils.http import urlunquote_plus
+from django.http.request import QueryDict
+from django.utils.http import urlencode, urlunquote_plus
 
 # third party
 import pkg_resources as pr
@@ -22,6 +24,7 @@ from pytest_django.live_server_helper import LiveServer
 
 # local
 from canary_core.hc_api_connector.models import BasicAPIClient
+from canary_core.hc_api_connector.tests.mock_api import encode_to_basename
 
 # pylint: disable=unused-argument,redefined-outer-name
 
@@ -118,3 +121,21 @@ def query_params() -> dict[str, str]:
     )
 
     return params
+
+
+@pytest.fixture
+def mock_api_response_data(query_params: dict[str, str]) -> dict[str, Any]:
+    """Load the mock API's response data for comparison during tests.
+
+    Args:
+        query_params (dict[str, str]): depend on this fixture of the query string
+            parameters to encode
+
+    Returns:
+        dict[str, Any]: the mock API's response data to the given `query_params`
+    """
+    basename = encode_to_basename(QueryDict(urlencode(query_params)))
+    fname = Path(pr.resource_filename(__name__, f"{basename}.json"))
+
+    with open(fname, "r", encoding="utf-8") as f:
+        return json.load(f)
