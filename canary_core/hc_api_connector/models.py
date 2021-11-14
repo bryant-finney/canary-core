@@ -50,6 +50,12 @@ class BasicAPIClient(Model):
     additional APIs.
     """
 
+    class Meta:
+        """Set the verbose/plural names."""
+
+        verbose_name = _("Basic API Client")
+        verbose_name_plural = _("Basic API Clients")
+
     #: Child classes may override this property to change the client's authentication
     #: requirements
     AuthClass = HTTPBasicAuth

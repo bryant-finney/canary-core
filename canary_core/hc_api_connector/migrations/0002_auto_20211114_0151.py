@@ -47,4 +47,11 @@ class Migration(migrations.Migration):
                 max_length=2,
             ),
         ),
+        migrations.AlterModelOptions(
+            name="basicapiclient",
+            options={
+                "verbose_name": "Basic API Client",
+                "verbose_name_plural": "Basic API Clients",
+            },
+        ),
     ]
