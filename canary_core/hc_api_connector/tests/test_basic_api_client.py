@@ -12,7 +12,6 @@ from django.test.client import Client
 
 # third party
 import pytest
-from pytest_django.fixtures import SettingsWrapper
 from pytest_django.live_server_helper import LiveServer
 
 # local
@@ -27,21 +26,6 @@ if TYPE_CHECKING:
     from django.contrib.auth.models import User  # noqa: I005  # pragma: no cover
 else:
     User = get_user_model()
-
-pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def enable_auth_class(settings: SettingsWrapper) -> None:
-    """Enable the mock API's auth class.
-
-    Args:
-        settings (SettingsWrapper): use this fixture to append the auth class to the
-            setting in ``REST_FRAMEWORK``
-    """
-    auth_class = "canary_core.hc_api_connector.tests.mock_auth.GenericAPIAuthentication"
-    if auth_class not in settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]:
-        settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append(auth_class)
 
 
 @pytest.fixture
