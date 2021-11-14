@@ -102,3 +102,6 @@ def test_property_update(
 
     # confirm all properties have changed
     assert all(getattr(property_record, k) != v for k, v in PROPERTY_DEFAULTS.items())
+
+    # ensure the record can be saved
+    property_record.save()
