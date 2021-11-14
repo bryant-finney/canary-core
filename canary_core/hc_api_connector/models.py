@@ -9,7 +9,7 @@ from __future__ import annotations
 import base64
 import datetime as dt
 import logging
-from typing import TYPE_CHECKING, Any, Type, TypedDict
+from typing import TYPE_CHECKING, Any, Type
 
 # django packages
 from django.contrib.auth import get_user_model
@@ -25,6 +25,15 @@ from django.utils.translation import gettext_lazy as _
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.models import Response
+
+# TypedDict lives in the `typing` module starting with Python3.8; Python3.7 needs to
+#   import it from typing_extensions instead
+try:
+    # stdlib
+    from typing import TypedDict
+except ImportError:
+    # third party
+    from typing_extensions import TypedDict
 
 logger = logging.getLogger(
     __name__ if __name__ != "__main__" else "canary_core.hc_api_connector.models"
