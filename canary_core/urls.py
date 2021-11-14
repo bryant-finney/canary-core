@@ -16,10 +16,8 @@ Examples:
 """
 # django packages
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import re_path
 
 urlpatterns = [
-    re_path(r"^login/", auth_views.LoginView),
     re_path(r"^admin/", admin.site.urls),
 ]
