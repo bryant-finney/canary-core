@@ -1,0 +1,52 @@
+# NOTE: depends on fixture xx-basic-api-client.yaml
+
+# this property references the local mock API server and the sample property in file
+# canary_core/hc_api_connector/tests/YWRkcmVzcz0xMjgrQ2hlc3RudXQrU3QuJnppcGNvZGU9MDIxMDg=.json
+- model: hc_api_connector.property
+  pk: 1
+  fields:
+    apiclient: 1
+    identifier:
+      address: 128 Chestnut St.
+      zipcode: 02108
+    assessment_date: 2015-01-01
+    sewage_type: MU
+    other_data:
+      property:
+        pool: true
+        attic: false
+        style: colonial
+        water: municipal
+        zoning: RH1
+        heating: forced_air_unit
+        basement: full_basement
+        fireplace: false
+        roof_type: Wood truss
+        roof_cover: Asphalt
+        year_built: 1957
+        subdivision: CITY LAND ASSOCIATION
+        no_of_stories: 2
+        property_type: Single Family Residential
+        exterior_walls: wood_siding
+        full_bath_count: 2
+        no_of_buildings: 1
+        number_of_units: 1
+        site_area_acres: 0.119
+        air_conditioning: "yes"
+        total_bath_count: 2.5
+        construction_type: Wood
+        heating_fuel_type: gas
+        number_of_bedrooms: 4
+        partial_bath_count: 1
+        building_area_sq_ft: 1824
+        garage_type_parking: underground_basement
+        total_number_of_rooms: 7
+        building_quality_score: 3
+        garage_parking_of_cars: 1
+        building_condition_score: 5
+      assessment:
+        apn: 0000 -1111
+        tax_year: 2015
+        tax_amount: 15199.86
+        total_assessed_value: 1300000.0
+    owners: []

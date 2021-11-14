@@ -1,0 +1,19 @@
+# this api client record references the mock API server running locally
+- model: hc_api_connector.basicapiclient
+  pk: 1
+  fields:
+    name: Mock API Server
+    credential_id: 6Ua8LJAoYn8xuzXpLT
+    credential_secret: dUzmNNv0ziIxp2ENhnV4yJ1U3tr7vdS3tWEBv7FYzzn02UaLN4Mb9VQApBTT3yVU
+    host: http://localhost:8080
+    path: /property/details
+
+# use this API client when executing inside Docker
+- model: hc_api_connector.basicapiclient
+  pk: 2
+  fields:
+    name: Mock API Server (Docker)
+    credential_id: 311NCTLs7ggo3LHHK3
+    credential_secret: P1L24foVHMevwVeJmmDEKtnXrz850onDm243NoW1zo2ejD33CGSKhGSsV4EVuq8H
+    host: http://house_canary:8000
+    path: /property/details
