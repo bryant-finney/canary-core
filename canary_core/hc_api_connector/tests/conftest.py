@@ -23,7 +23,7 @@ from pytest_django.fixtures import SettingsWrapper
 from pytest_django.live_server_helper import LiveServer
 
 # local
-from canary_core.hc_api_connector.models import BasicAPIClient
+from canary_core.hc_api_connector.models import BasicAPIClient, PropertyAddress
 from canary_core.hc_api_connector.tests.mock_api import encode_to_basename
 
 # pylint: disable=unused-argument,redefined-outer-name
@@ -105,17 +105,17 @@ def mock_api_client(
 
 
 @pytest.fixture
-def query_params() -> dict[str, str]:
+def query_params() -> PropertyAddress:
     """Decode the filename to get the correct query params to GET it.
 
     Returns:
-        dict[str, str]: the query string parameters that were encoded when naming the
+        PropertyAddress: the query string parameters that were encoded when naming the
             mock API's response file
     """
     dirname = Path(pr.resource_filename(__name__.rsplit(".", maxsplit=1)[0], ""))
     fname = next(dirname.glob("*.json"))
 
-    params: dict[str, str] = dict(
+    params: PropertyAddress = dict(
         tuple(param.split("=", maxsplit=1))  # type: ignore  # mypy unaware of maxsplit
         for param in urlunquote_plus(b64decode(fname.stem).decode()).split("&")
     )
@@ -124,11 +124,11 @@ def query_params() -> dict[str, str]:
 
 
 @pytest.fixture
-def mock_api_response_data(query_params: dict[str, str]) -> dict[str, Any]:
+def mock_api_response_data(query_params: PropertyAddress) -> dict[str, Any]:
     """Load the mock API's response data for comparison during tests.
 
     Args:
-        query_params (dict[str, str]): depend on this fixture of the query string
+        query_params (PropertyAddress): depend on this fixture of the query string
             parameters to encode
 
     Returns:

@@ -9,7 +9,7 @@ from __future__ import annotations
 import base64
 import datetime as dt
 import logging
-from typing import TYPE_CHECKING, Any, Type
+from typing import TYPE_CHECKING, Any, Type, TypedDict
 
 # django packages
 from django.contrib.auth import get_user_model
@@ -132,6 +132,16 @@ class BasicAPIClient(Model):
             str: the URL, consisting of scheme, host, and path
         """
         return "/".join([str(self.host).rstrip("/"), str(self.path).lstrip("/")])
+
+
+class PropertyAddress(TypedDict):
+    """Document keys used to identify properties in the HouseCanary API."""
+
+    #: House number and street, e.g. ``7500 Melrose Ave``
+    address: str
+
+    #: The 5-digit zipcode
+    zipcode: str
 
 
 class Property(Model):

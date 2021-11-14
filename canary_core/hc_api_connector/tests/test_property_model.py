@@ -12,7 +12,11 @@ from typing import Any, Iterator
 import pytest
 
 # local
-from canary_core.hc_api_connector.models import BasicAPIClient, Property
+from canary_core.hc_api_connector.models import (
+    BasicAPIClient,
+    Property,
+    PropertyAddress,
+)
 
 PROPERTY_DEFAULTS: dict[str, Any] = dict(
     assessment_date=None, sewage_type=Property.SewageType.UNKNOWN, other_data={}
@@ -21,7 +25,7 @@ PROPERTY_DEFAULTS: dict[str, Any] = dict(
 
 @pytest.fixture
 def property_record(
-    mock_api_client: BasicAPIClient, query_params: dict[str, str]
+    mock_api_client: BasicAPIClient, query_params: PropertyAddress
 ) -> Iterator[Property]:
     """Create a :class:`Property` record for use in tests.
 
@@ -31,7 +35,7 @@ def property_record(
     Args:
         mock_api_client (BasicAPIClient): link the :class:`Property` record to the
             mock API client record
-        query_params (dict[str, str]): use the query parameters dictionary as the
+        query_params (PropertyAddress): use the query parameters dictionary as the
             property's identifier
 
     Yields:
