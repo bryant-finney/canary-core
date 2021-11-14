@@ -1,8 +1,10 @@
 # `canary_core`
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/bryant-finney/canary-core)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/bryant-finney/canary-core) 
 
-[![pipeline status](https://gitlab.com/django-canary/core/badges/main/pipeline.svg)](https://gitlab.com/django-canary/core/-/pipelines)
+[![pipeline status](https://gitlab.com/django-canary/core/badges/main/pipeline.svg)](https://gitlab.com/django-canary/core/-/pipelines) ![coverage](https://gitlab.com/django-canary/core/badges/main/coverage.svg)
+
+
 
 Define the `canary_core` Django project for interfacing with the HouseCanary API. This
 project provides a custom Django app for interacting with third-party APIs providing
