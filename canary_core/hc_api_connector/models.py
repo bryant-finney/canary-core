@@ -7,6 +7,7 @@ from __future__ import annotations
 
 # stdlib
 import base64
+import datetime as dt
 import logging
 from typing import TYPE_CHECKING, Any, Type
 
@@ -208,6 +209,51 @@ class Property(Model):
         resp = self.apiclient.get(**dict(self.identifier))
         resp.raise_for_status()
         return resp
+
+    def update(self, api_data: dict[str, Any]) -> "Property":
+        """Update this object with the provided HouseCanary API data.
+
+        # TODO: implement a more rigorous serializer for deserializing API data
+
+        # NOTE: properties are updated, but the record is not saved
+
+        Args:
+            api_data (dict[str, Any]): the raw data from a request to the HouseCanary
+                API
+
+        Returns:
+            Property: returns ``self`` for convenience
+        """
+        # pylint: disable=no-member     # it really does have the `.path` attr
+        key = str(self.apiclient.path).strip("/")
+        result = api_data.get(key, {}).get("result", {})
+
+        try:
+            sewage_type = result["property"].pop("sewer")
+        except KeyError:
+            logger.error(
+                "failed to retrieve sewage type from response %s",
+                api_data,
+                exc_info=True,
+            )
+        else:
+            self.sewage_type = sewage_type
+
+        try:
+            assessment_year = result.get("assessment").pop("assessment_year")
+        except KeyError:
+            logger.error(
+                "failed to retrieve assessment year from response %s",
+                api_data,
+                exc_info=True,
+            )
+        else:
+            self.assessment_date = dt.date(year=assessment_year, month=1, day=1)
+
+        if result:
+            self.other_data = result
+
+        return self
 
 
 logger.debug("imported module %s", __name__)

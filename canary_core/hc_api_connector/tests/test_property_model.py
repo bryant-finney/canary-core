@@ -55,9 +55,6 @@ def property_record(
 
 def test_property_fetch(property_record: Property) -> None:
     """Verify :func:`Property.fetch()`."""
-    # confirm the initial state of the Property record
-    assert all(getattr(property_record, k) == v for k, v in PROPERTY_DEFAULTS.items())
-
     resp = property_record.fetch()
     full_resp_data = resp.json()
 
@@ -92,3 +89,16 @@ def test_property_fetch_data(
     """Verify the response data of :func:`Property.fetch()` from the mock API."""
     resp_data = property_record.fetch().json()
     compare_dicts(resp_data, mock_api_response_data)
+
+
+def test_property_update(
+    property_record: Property, mock_api_response_data: dict[str, Any]
+) -> None:
+    """Verify :func:`Property.update()`."""
+    # confirm the initial state of the Property record
+    assert all(getattr(property_record, k) == v for k, v in PROPERTY_DEFAULTS.items())
+
+    property_record.update(mock_api_response_data)
+
+    # confirm all properties have changed
+    assert all(getattr(property_record, k) != v for k, v in PROPERTY_DEFAULTS.items())
