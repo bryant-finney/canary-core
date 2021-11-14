@@ -12,7 +12,7 @@ from pathlib import Path
 
 # django packages
 from django.contrib.auth import get_user_model
-from django.http.request import HttpRequest
+from django.http.request import HttpRequest, QueryDict
 from django.http.response import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -35,6 +35,19 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+def encode_to_basename(params: QueryDict) -> str:
+    """Encode the provided query string parameters to the basename of response file.
+
+    Args:
+        params (QueryDict): the query string parameters identifying the property
+            to the HouseCanary API
+
+    Returns:
+        str: the encoded the given parameters encoded as a string
+    """
+    return base64.b64encode(params.urlencode().encode()).decode()
+
+
 def house_canary(request: HttpRequest) -> HttpResponse:
     """Mock the HouseCanary API by providing a pre-loaded response.
 
@@ -49,7 +62,7 @@ def house_canary(request: HttpRequest) -> HttpResponse:
         return HttpResponseBadRequest(
             content=_("query string parameters required to identify property")
         )
-    basename = base64.b64encode(request.GET.urlencode().encode()).decode()
+    basename = encode_to_basename(request.GET)
     fname = Path(pr.resource_filename(__name__, f"{basename}.json"))
 
     try:
