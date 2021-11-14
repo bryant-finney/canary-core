@@ -109,3 +109,14 @@ def test_property_update(
 
     # ensure the record can be saved
     property_record.save()
+
+
+def test_property_from_client(
+    mock_api_client: BasicAPIClient, query_params: PropertyAddress
+) -> None:
+    """Verify the class method :func:`Property.from_client()`."""
+    prop = Property.from_client(mock_api_client, query_params, save=True)
+
+    selected_prop = Property.objects.get(pk=prop.pk)
+
+    assert prop == selected_prop

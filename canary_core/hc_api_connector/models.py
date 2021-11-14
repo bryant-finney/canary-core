@@ -211,6 +211,34 @@ class Property(Model):
         """
         return " | ".join(f"{k.title()} {v}" for k, v in dict(self.identifier).items())
 
+    @classmethod
+    def from_client(
+        cls,
+        api_client: BasicAPIClient,
+        address: PropertyAddress,
+        save: bool = False,
+        **kwargs: Any,
+    ) -> "Property":
+        """Instantiate a new :class:`Property` from the given client + parameters.
+
+        The query string parameters are used to identify the property to select.
+
+        Args:
+            api_client (BasicAPIClient): use this client to retrieve the data for this
+                property
+            address (PropertyAddress): this is directly stored in the ``identifier``
+                field
+            save (bool): save the record to the DB; defaults to ``False``
+            **kwargs (Any): additional keyword arguments are passed directly to the
+                :class:`Property` initializer
+
+        Returns:
+            Property: the new :class:`Property` record; will only be saved if the
+                ``save`` argument is truth-y
+        """
+        prop = cls(apiclient=api_client, identifier=address, **kwargs)
+        return prop.fetch_and_update(save=save)
+
     def fetch(self) -> Response:
         """Update this record with data retrieved from its API client.
 
@@ -221,6 +249,25 @@ class Property(Model):
         resp = self.apiclient.get(**dict(self.identifier))
         resp.raise_for_status()
         return resp
+
+    def fetch_and_update(self, save: bool = False) -> "Property":
+        """Fetch data from the API client and update this record, optionally saving.
+
+        Provided for convenience.
+
+        Args:
+            save (bool): if set, save the record after updating it; defaults to False
+
+        Returns:
+            Property: return ``self`` after applying changes
+        """
+        resp = self.fetch()
+        self.update(resp.json())
+
+        if save:
+            self.save()
+
+        return self
 
     def update(self, api_data: dict[str, Any]) -> "Property":
         """Update this object with the provided HouseCanary API data.
