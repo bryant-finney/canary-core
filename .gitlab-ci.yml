@@ -140,7 +140,7 @@ check startup:
     - django-admin makemigrations
     # if changes to the models defined by this project result in a migration, this step
     #   will fail
-    - git diff --exit-code
+    - git add . && git diff --exit-code HEAD
     - django-admin migrate --no-input
     - django-admin collectstatic --no-input
     - django-admin createsuperuser --no-input --username gitlab-runner --email gitlab-runner@junk.com
