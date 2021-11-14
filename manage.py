@@ -4,6 +4,9 @@
 import os
 import sys
 
+# third party
+from dotenv import load_dotenv
+
 
 def main() -> None:
     """Run administrative tasks.
@@ -12,6 +15,8 @@ def main() -> None:
         ImportError: [description]
     """
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "canary_core.settings")
+    load_dotenv(override=False)
+
     try:
         # django packages
         from django.core.management import execute_from_command_line
