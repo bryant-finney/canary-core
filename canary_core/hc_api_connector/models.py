@@ -198,5 +198,16 @@ class Property(Model):
         """
         return " | ".join(f"{k.title()} {v}" for k, v in dict(self.identifier).items())
 
+    def fetch(self) -> Response:
+        """Update this record with data retrieved from its API client.
+
+        Returns:
+            Response: the :class:`Response` object from the HouseCanary API request
+        """
+        # pylint: disable=no-member     # it really does have the `get()` method
+        resp = self.apiclient.get(**dict(self.identifier))
+        resp.raise_for_status()
+        return resp
+
 
 logger.debug("imported module %s", __name__)
