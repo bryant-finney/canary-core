@@ -115,7 +115,7 @@ def query_params() -> PropertyAddress:
     dirname = Path(pr.resource_filename(__name__.rsplit(".", maxsplit=1)[0], ""))
     fname = next(dirname.glob("*.json"))
 
-    params: PropertyAddress = dict(
+    params = PropertyAddress(
         tuple(param.split("=", maxsplit=1))  # type: ignore  # mypy unaware of maxsplit
         for param in urlunquote_plus(b64decode(fname.stem).decode()).split("&")
     )
