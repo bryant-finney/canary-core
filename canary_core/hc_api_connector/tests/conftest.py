@@ -23,6 +23,8 @@ from pytest_django.live_server_helper import LiveServer
 # local
 from canary_core.hc_api_connector.models import BasicAPIClient
 
+# pylint: disable=unused-argument,redefined-outer-name
+
 CREDENTIAL_ID = f"test-cred-id-{__name__}"
 CREDENTIAL_SECRET = f"test-cred-secret-{__name__}"
 
@@ -48,25 +50,36 @@ def root_urlconf(settings: SettingsWrapper) -> SettingsWrapper:
 
 
 @pytest.fixture
-def enable_auth_class(settings: SettingsWrapper) -> None:
+def enable_auth_class(settings: SettingsWrapper) -> SettingsWrapper:
     """Enable the mock API's auth class.
 
     Args:
         settings (SettingsWrapper): use this fixture to append the auth class to the
             setting in ``REST_FRAMEWORK``
+
+    Returns:
+        SettingsWrapper: the updated ``settings`` object
     """
     auth_class = "canary_core.hc_api_connector.tests.mock_auth.GenericAPIAuthentication"
     if auth_class not in settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]:
         settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append(auth_class)
+    return settings
 
 
 @pytest.fixture
-def mock_api_client(live_server: LiveServer) -> Iterator[BasicAPIClient]:
+def mock_api_client(
+    root_urlconf: SettingsWrapper,
+    enable_auth_class: SettingsWrapper,
+    live_server: LiveServer,
+) -> Iterator[BasicAPIClient]:
     """Get or create a :class:`BasicAPIClient` object.
 
     After the test, delete it.
 
     Args:
+        root_urlconf (SettingsWrapper): depend on this fixture to enable the mock API
+        enable_auth_class (SettingsWrapper): depend on this fixture to enable the auth
+            class used by the mock API server
         live_server (LiveServer): configure the API client to reference the mock
             server's host and path
 
