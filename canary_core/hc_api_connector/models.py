@@ -229,7 +229,7 @@ class Property(Model):
         result = api_data.get(key, {}).get("result", {})
 
         try:
-            sewage_type = result["property"].pop("sewer")
+            sewage_type = str(result["property"].pop("sewer") or "Unknown").upper()
         except KeyError:
             logger.error(
                 "failed to retrieve sewage type from response %s",
@@ -237,7 +237,10 @@ class Property(Model):
                 exc_info=True,
             )
         else:
-            self.sewage_type = sewage_type
+            try:
+                self.sewage_type = self.SewageType[sewage_type]
+            except KeyError:
+                logger.error("unrecognized sewage type: %s", sewage_type, exc_info=True)
 
         try:
             assessment_year = result.get("assessment").pop("assessment_year")
