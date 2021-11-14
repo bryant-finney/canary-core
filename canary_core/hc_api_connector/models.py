@@ -186,7 +186,7 @@ class Property(Model):
         null=True, help_text=_("the date at which the property was assessed")
     )
     sewage_type: "CharField" = CharField(
-        max_length=2, choices=SewageType.choices, default=SewageType.NONE
+        max_length=2, choices=SewageType.choices, default=SewageType.UNKNOWN
     )
     other_data = JSONField(default=dict, verbose_name=_("Other Data"))
 
