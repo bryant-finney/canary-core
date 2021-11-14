@@ -98,7 +98,8 @@ def user() -> Iterator[User]:
 @pytest.mark.urls("canary_core.hc_api_connector.tests.mock_api")
 def test_authenticate(client: Client, basic_api_client: BasicAPIClient) -> None:
     """Verify that the credentials can retrieve mock user records."""
-    resp = client.get("/api/users/", **basic_api_client.auth_header)
+    # NOTE: `mypy` unable to distinguish the used kwargs and expects `bool` values
+    resp = client.get("/api/users/", **basic_api_client.auth_header)  # type: ignore
     assert resp.status_code == 200
 
 
