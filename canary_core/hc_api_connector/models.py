@@ -8,12 +8,16 @@ from __future__ import annotations
 # stdlib
 import base64
 import logging
-from typing import Any, Type
+from typing import TYPE_CHECKING, Any, Type
 
 # django packages
 from django.contrib.auth import get_user_model
 from django.core import validators
-from django.db import models
+from django.db.models import CharField, ForeignKey, ManyToManyField, Model
+from django.db.models.deletion import SET_NULL
+from django.db.models.enums import TextChoices
+from django.db.models.fields import DateField, URLField
+from django.db.models.fields.json import JSONField
 from django.utils.translation import gettext_lazy as _
 
 # third party
@@ -24,10 +28,19 @@ from requests.models import Response
 logger = logging.getLogger(
     __name__ if __name__ != "__main__" else "canary_core.hc_api_connector.models"
 )
-User: Type[models.Model] = get_user_model()
+
+if TYPE_CHECKING:
+    # stdlib
+    from typing import Optional  # noqa: F401  # only used when type checking
+
+    # django packages
+    from django.contrib.auth.models import User  # noqa: I005  # pragma: no cover
+    from django.db.models import QuerySet  # noqa: F401  # only used when type checking
+else:
+    User: Type[Model] = get_user_model()
 
 
-class BasicAPIClient(models.Model):
+class BasicAPIClient(Model):
     """Provide a client that uses basic authorization for API access.
 
     This model can be extracted to a common app should the time come for supporting
@@ -38,7 +51,14 @@ class BasicAPIClient(models.Model):
     #: requirements
     AuthClass = HTTPBasicAuth
 
-    credential_id = models.CharField(
+    name: "CharField" = CharField(
+        max_length=64,
+        null=False,
+        blank=True,
+        help_text=_("friendly name of the API client"),
+    )
+
+    credential_id: "CharField" = CharField(
         max_length=256,
         unique=True,
         help_text=_(
@@ -46,7 +66,8 @@ class BasicAPIClient(models.Model):
             "`Authorization: Basic {username}:{password}` header"
         ),
     )
-    credential_secret = models.CharField(
+
+    credential_secret: "CharField" = CharField(
         max_length=256,
         help_text=_(
             "store the `{username}` portion of the "
@@ -54,18 +75,26 @@ class BasicAPIClient(models.Model):
         ),
     )
 
-    host = models.URLField(
+    host: "URLField" = URLField(
         help_text=_("the scheme, hostname, and port of the API server")
     )
 
     # ref: https://stackoverflow.com/a/4669755/1415275
-    path = models.CharField(
+    path: "CharField" = CharField(
         max_length=256,
         validators=[
             validators.RegexValidator(r"^/?[a-zA-Z0-9_.-]*(/[a-zA-Z0-9_.-]+)*\Z")
         ],
         help_text=_("the URL providing the property data"),
     )
+
+    def __str__(self) -> str:
+        """Control the string representation of these records.
+
+        Returns:
+            str: the string representation of the record
+        """
+        return f"{self.name} | {self.url}"
 
     @property
     def auth_header(self) -> dict[str, bytes]:
@@ -89,13 +118,22 @@ class BasicAPIClient(models.Model):
             Response: the response object from the GET request.
         """
         return requests.get(
-            url="/".join([str(self.host).rstrip("/"), str(self.path).lstrip("/")]),
+            url=self.url,
             params=params,
             auth=self.AuthClass(self.credential_id, self.credential_secret),
         )
 
+    @property
+    def url(self) -> str:
+        """Provide the URL for accessing the client.
 
-class Property(models.Model):
+        Returns:
+            str: the URL, consisting of scheme, host, and path
+        """
+        return "/".join([str(self.host).rstrip("/"), str(self.path).lstrip("/")])
+
+
+class Property(Model):
     """Model property data retrieved from the HouseCanary API.
 
     This model is extensible and can be reused for additional APIs in the future. When
@@ -106,22 +144,28 @@ class Property(models.Model):
         - import the base model from the new app, and extend it here for HouseCanary
     """
 
-    class SewageType(models.TextChoices):
+    class Meta:
+        """Specify the plural name."""
+
+        verbose_name_plural = _("Properties")
+
+    class SewageType(TextChoices):
         """Enumerate the sewage type choices retrieved from HouseCanary."""
 
+        UNKNOWN = "UN", _("Unknown")
         NONE = "NO", _("None")
         MUNICIPAL = "MU", _("Municipal")
         STORM = "ST", _("Storm")
         SEPTIC = "SE", _("Septic")
         YES = "YS", _("Yes")
 
-    apiclient = models.ForeignKey(
+    apiclient: "ForeignKey[Property, BasicAPIClient]" = ForeignKey(
         to=BasicAPIClient,
-        on_delete=models.SET_NULL,
+        on_delete=SET_NULL,
         null=True,
         help_text=_("The API client provividing information for this property"),
     )
-    owners = models.ManyToManyField(
+    owners: "ManyToManyField[Property, User]" = ManyToManyField(
         to=User,
         related_name="properties",
         swappable=True,
@@ -132,21 +176,27 @@ class Property(models.Model):
     )
 
     # TODO: migrate to using AddressField from `django-address` some day
-    identifier = models.JSONField(
+    identifier = JSONField(
         default=dict,
         help_text=_(
             "store address information as JSON for use with the HouseCanary API"
         ),
     )
-    assessment_date = models.DateField(
-        help_text=_("the date at which the property was assessed")
+    assessment_date: "DateField" = DateField(
+        null=True, help_text=_("the date at which the property was assessed")
     )
-    sewage_type = models.CharField(
+    sewage_type: "CharField" = CharField(
         max_length=2, choices=SewageType.choices, default=SewageType.NONE
     )
-    other_data = models.JSONField(default=dict, verbose_name=_("Other Data"))
+    other_data = JSONField(default=dict, verbose_name=_("Other Data"))
 
-    class Meta:
-        """Specify the plural name."""
+    def __str__(self) -> str:
+        """Define the record's string representation.
 
-        verbose_name_plural = _("Properties")
+        Returns:
+            str: the string representation of the record
+        """
+        return " | ".join(f"{k.title()} {v}" for k, v in dict(self.identifier).items())
+
+
+logger.debug("imported module %s", __name__)
