@@ -31,12 +31,14 @@ logger = logging.getLogger(
 )
 
 if TYPE_CHECKING:
+    # this branch only executes when `mypy` is performing static analysis
+
     # stdlib
-    from typing import Optional  # noqa: F401  # only used when type checking
+    from typing import Optional  # noqa: F401  # pragma: no cover
 
     # django packages
     from django.contrib.auth.models import User  # noqa: I005  # pragma: no cover
-    from django.db.models import QuerySet  # noqa: F401  # only used when type checking
+    from django.db.models import QuerySet  # noqa: F401  # pragma: no cover
 else:
     User: Type[Model] = get_user_model()
 
