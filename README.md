@@ -1,6 +1,6 @@
 # `canary_core`
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/bryant-finney/canary-core) 
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/bryant-finney/canary-core)
 
 [![pipeline status](https://gitlab.com/django-canary/core/badges/main/pipeline.svg)](https://gitlab.com/django-canary/core/-/pipelines)
 ![coverage](https://gitlab.com/django-canary/core/badges/main/coverage.svg)
