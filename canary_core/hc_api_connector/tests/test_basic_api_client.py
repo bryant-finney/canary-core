@@ -12,7 +12,6 @@ from django.test.client import Client
 
 # third party
 import pytest
-from pytest_django.fixtures import SettingsWrapper
 from pytest_django.live_server_helper import LiveServer
 
 # local
@@ -27,21 +26,6 @@ if TYPE_CHECKING:
     from django.contrib.auth.models import User  # noqa: I005  # pragma: no cover
 else:
     User = get_user_model()
-
-pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def enable_auth_class(settings: SettingsWrapper) -> None:
-    """Enable the mock API's auth class.
-
-    Args:
-        settings (SettingsWrapper): use this fixture to append the auth class to the
-            setting in ``REST_FRAMEWORK``
-    """
-    auth_class = "canary_core.hc_api_connector.tests.mock_auth.GenericAPIAuthentication"
-    if auth_class not in settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]:
-        settings.REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append(auth_class)
 
 
 @pytest.fixture
@@ -98,7 +82,8 @@ def user() -> Iterator[User]:
 @pytest.mark.urls("canary_core.hc_api_connector.tests.mock_api")
 def test_authenticate(client: Client, basic_api_client: BasicAPIClient) -> None:
     """Verify that the credentials can retrieve mock user records."""
-    resp = client.get("/api/users/", **basic_api_client.auth_header)
+    # NOTE: `mypy` unable to distinguish the used kwargs and expects `bool` values
+    resp = client.get("/api/users/", **basic_api_client.auth_header)  # type: ignore
     assert resp.status_code == 200
 
 
@@ -113,3 +98,11 @@ def test_get_request(user: User, basic_api_client: BasicAPIClient) -> None:
     user_data = UserSerializer(instance=[user], many=True).data
 
     assert user_data == response_data
+
+
+def test_client_string_repr(basic_api_client: BasicAPIClient) -> None:
+    """Verify string formatting for the basic API client model."""
+    client_str = str(basic_api_client)
+
+    assert basic_api_client.name in client_str
+    assert basic_api_client.url in client_str

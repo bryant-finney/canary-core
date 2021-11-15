@@ -25,5 +25,6 @@ omit =
     .tox/*
     .venv/*
     venv*
+    manage.py
 
 show_missing = True

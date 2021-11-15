@@ -3,6 +3,9 @@
 # Created: 2021-11-11 13:16:17
 # Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
+x-api-image: &api_image
+  image: "${DOCKER_IMAGE_PATH}:dev-${DOCKER_VERSION_TAG:-latest}"
+
 services:
   db:
     build:
@@ -11,12 +14,27 @@ services:
     # occupy `localhost:5432` during development
     ports: [5432:5432]
 
+  house_canary:
+    # use the dev API image to run a HouseCanary mock API
+    <<: *api_image
+
+    # run the server using the mock API's URL configuration
+    command: django-admin runserver 0.0.0.0:8000
+    depends_on: [db]
+    environment:
+      - CANARY_CORE_DB_PASSWORD
+      - CANARY_CORE_DB_USER
+      - CANARY_CORE_ROOT_URLCONF=canary_core.hc_api_connector.tests.mock_api
+
+    ports: [8080:8000]
+
   api:
+    <<: *api_image
+
     build:
       target: dev
 
     # to run the dev server, set CANARY_CORE_CMD="django-admin runserver"
     command: "${CANARY_CORE_CMD:-sleep infinity}"
-    image: "${DOCKER_IMAGE_PATH}:dev-${DOCKER_VERSION_TAG:-latest}"
     volumes:
       - .:/work
