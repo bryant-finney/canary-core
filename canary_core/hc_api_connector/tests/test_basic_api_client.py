@@ -98,3 +98,11 @@ def test_get_request(user: User, basic_api_client: BasicAPIClient) -> None:
     user_data = UserSerializer(instance=[user], many=True).data
 
     assert user_data == response_data
+
+
+def test_client_string_repr(basic_api_client: BasicAPIClient) -> None:
+    """Verify string formatting for the basic API client model."""
+    client_str = str(basic_api_client)
+
+    assert basic_api_client.name in client_str
+    assert basic_api_client.url in client_str

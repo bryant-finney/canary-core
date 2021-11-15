@@ -111,6 +111,13 @@ def test_property_update(
     property_record.save()
 
 
+def test_property_string_repr(property_record: Property) -> None:
+    """Verify string formatting for the property record."""
+    prop_str = str(property_record)
+    assert all([k.title() in prop_str for k in property_record.identifier])
+    assert all([v in prop_str for v in property_record.identifier.values()])
+
+
 def test_property_from_client(
     mock_api_client: BasicAPIClient, query_params: PropertyAddress
 ) -> None:
