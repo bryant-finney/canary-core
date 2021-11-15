@@ -94,7 +94,7 @@ files-output = "no"
 evaluation = "10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
 
 [tool.pylint.basic]
-good-names = "p,i,j,k,v,f,ex,pk,Run,_,scenario_request_client_initializer,precision_personnel_solution_fields"
+good-names = "e,f,i,j,k,p,v,ex,pk,Run,_,scenario_request_client_initializer,precision_personnel_solution_fields"
 bad-names = "foo,bar,baz,toto,tutu,tata"
 include-naming-hint = "no"
 property-classes = "abc.abstractproperty"
