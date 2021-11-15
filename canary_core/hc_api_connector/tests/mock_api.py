@@ -7,6 +7,7 @@ from __future__ import annotations
 
 # stdlib
 import base64
+import json
 import logging
 from pathlib import Path
 
@@ -70,7 +71,7 @@ def house_canary(request: HttpRequest) -> HttpResponse:
             resp_data = f.read()
     except FileNotFoundError:
         return HttpResponseNotFound(
-            content={"msg": "no such property", "detail": request.GET},
+            content=json.dumps({"msg": "no such property", "detail": request.GET}),
             content_type="application/json",
         )
 
