@@ -17,7 +17,18 @@ Examples:
 # django packages
 from django.contrib import admin
 from django.urls import re_path
+from django.urls.conf import include, path
+from rest_framework.routers import DefaultRouter
+
+# local
+from canary_core.hc_api_connector import views
+
+router = DefaultRouter()
+router.register(r"apiclients", views.BasicAPIClientViewSet)
+router.register(r"properties", views.PropertyViewSet)
 
 urlpatterns = [
     re_path(r"^admin/", admin.site.urls),
+    re_path(r"^api/", include(router.urls)),
+    path("", views.has_septic),
 ]
