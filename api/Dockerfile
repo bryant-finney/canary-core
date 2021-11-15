@@ -10,7 +10,9 @@ FROM python:3.10-alpine AS base
 COPY ./api/install_alpine_deps.sh /usr/local/bin/install-deps
 
 RUN install-deps
-WORKDIR /work
+
+# match the default clone directory for GitLab's Docker executor
+WORKDIR /builds/django-canary/core
 
 ENV \
   DJANGO_SETTINGS_MODULE=canary_core.settings                                     \
@@ -53,7 +55,9 @@ FROM dev AS pkg-build
 RUN echo "build wheel" && poetry build -f wheel
 
 FROM minimal-deps AS prod
-COPY --from=pkg-build /work/dist/*.whl ./
+
+WORKDIR /work
+COPY --from=pkg-build /builds/django-canary/core/dist/*.whl ./
 
 RUN echo "installing wheel" && pip install *.whl
 CMD [ "/usr/local/bin/gunicorn", "canary_core.wsgi:application", "--bind 0.0.0.0:8000"]

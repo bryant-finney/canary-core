@@ -47,16 +47,16 @@ for path, ext in itertools.product([Path.cwd(), Path.home()], loader_map.keys())
     try:
         with open(CONFIG_FILENAME, "r", encoding="utf-8") as f:
             config.update(load_config(f))
-    except FileNotFoundError:
-        logger.debug("no file %s", CONFIG_FILENAME)
-        CONFIG_FILENAME = None
+    except FileNotFoundError:  # pragma: no cover
+        logger.debug("no file %s", CONFIG_FILENAME)  # pragma: no cover
+        CONFIG_FILENAME = None  # pragma: no cover
     else:
         logger.info("using config file: %s", CONFIG_FILENAME)
         break
 
 
 if not CONFIG_FILENAME:
-    logger.warning(
+    logger.warning(  # pragma: no cover
         "no config file found in '%s' or '%s'; using defaults",
         Path.cwd(),
         Path.home(),

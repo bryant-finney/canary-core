@@ -57,6 +57,43 @@ Demo on a single system:
 After selecting a development strategy and installing necessary dependencies, see the
 following steps for completing the environment setup.
 
+### Container-based Development
+
+To start the minimal production containers locally, you can use `docker-compose`.
+
+1. Clone this repo
+2. `. ./.envrc` to set environment variables
+3. `docker-compose pull` to pull the required Docker images
+4. `export CANARY_CORE_CMD='django-admin runserver'` in order to run the development
+   server (by default, the API container runs `sleep infinity`)
+5. To create the shortcut `dev-compose`, run `eval "$(CANARY_ALIASES)"`
+   - this is just an alias for `docker-compose -f docker-compose.yml -f compose/dev.yml`
+6. Finally, run `dev-compose up -d`
+
+The above should start a network of three containers: `db` (the `postgresql` database),
+`house_canary` (the HouseCanary mock API server), and `api` (the core API container).
+
+### Virtual Environment
+
+To perform the environment setup:
+
+1. Clone this repo
+2. `direnv allow` to allow `direnv` to automatically execute [.envrc](.envrc)
+3. Run `./api/docker-entrypoint.sh` to start the development server
+4. To start the mock HouseCanary API server, run the following:
+   ```zsh
+   $ CANARY_CORE_ROOT_URLCONF=canary_core.hc_api_connector.tests.mock_api django-admin runserver localhost:8080
+   ```
+
+## Next Steps
+
+- [ ] integrate authorization class / model for restricting property data access to
+      property owners + staff
+- [ ] add routes for integrating [`drf-yasg`](https://github.com/axnsan12/drf-yasg) to
+      document the API
+- [ ] build and publish package to internal registry using a CI job
+- [ ] add integration tests for the primary application
+
 ---
 
 # Appendix
