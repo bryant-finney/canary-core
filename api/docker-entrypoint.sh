@@ -6,14 +6,11 @@
 # Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
 
-# -------------------------------------------------------------------------------------
-# TODO: uncomment after issue #2
-# echo "running migrations"
-# django-admin migrate --no-input
-#
-# echo "collecting static files"
-# django-admin collectstatic --no-input
-# -------------------------------------------------------------------------------------
+echo "running migrations"
+django-admin migrate --no-input
+
+echo "collecting static files"
+django-admin collectstatic --no-input
 
 # shellcheck disable=SC2068
 $@

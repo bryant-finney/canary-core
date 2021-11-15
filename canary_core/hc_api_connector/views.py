@@ -9,12 +9,17 @@ import logging
 
 # django packages
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest
+from django.http.response import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseServerError,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 # third party
 from requests import HTTPError
+from requests.exceptions import ConnectionError
 
 # local
 from canary_core.hc_api_connector.models import BasicAPIClient, Property
@@ -71,6 +76,12 @@ def has_septic(request: HttpRequest) -> HttpResponse:
         prop: Property = Property.objects.get(identifier=address)
     except Property.DoesNotExist:
         api_client = BasicAPIClient.objects.first()
+        if not api_client:
+            return HttpResponseServerError(
+                content_type="application/json",
+                content=json.dumps({"msg": "Misconfigured: no API client records"}),
+            )
+
         try:
             prop = Property.from_client(
                 api_client,
@@ -82,6 +93,13 @@ def has_septic(request: HttpRequest) -> HttpResponse:
                 status=e.response.status_code,
                 content_type="application/json",
                 content=e.response.content.decode(),
+            )
+        except ConnectionError as e:
+            return HttpResponseServerError(
+                content_type="application/json",
+                content=json.dumps(
+                    {"msg": "failed to connect to API", "detail": str(e)}
+                ),
             )
 
     if prop.sewage_type in [None, prop.SewageType.UNKNOWN.value]:
