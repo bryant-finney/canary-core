@@ -257,6 +257,13 @@ class Property(Model):
     def fetch(self) -> Response:
         """Update this record with data retrieved from its API client.
 
+        Ignore DAR402 b.c. `darglint` is unaware of exceptions raised by called
+        methods.
+
+        noqa: DAR402
+        Raises:
+            HttpError: raised by the API client for unsuccessful API requests
+
         Returns:
             Response: the :class:`Response` object from the HouseCanary API request
         """
