@@ -4,6 +4,10 @@
 
 [![pipeline status](https://gitlab.com/django-canary/core/badges/main/pipeline.svg)](https://gitlab.com/django-canary/core/-/pipelines)
 ![coverage](https://gitlab.com/django-canary/core/badges/main/coverage.svg)
+[![code style: black](https://user-content.gitlab-static.net/e7b1487736a40a602d6d6861a3e0d4f95392e460/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d626c61636b2d3030303030302e737667)](https://github.com/psf/black)
+[![pre-commit: enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Checked with mypy](https://img.shields.io/badge/mypy-checked-blue)](http://mypy-lang.org/)
+[![repo: gitlab](https://img.shields.io/badge/repo-gitlab-violet)](https://gitlab.com/django-canary/core)
 
 Define the `canary_core` Django project for interfacing with the HouseCanary API. This
 project provides a custom Django app for interacting with third-party APIs providing
@@ -89,6 +93,8 @@ To perform the environment setup:
 
 - [ ] integrate authorization class / model for restricting property data access to
       property owners + staff
+- [ ] split `pre-commit` QA jobs into `mypy`, `flake8`, `black`, and `prettier` for
+      more clarity/better feedback
 - [ ] add routes for integrating [`drf-yasg`](https://github.com/axnsan12/drf-yasg) to
       document the API
 - [ ] build and publish package to internal registry using a CI job
