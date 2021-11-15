@@ -54,4 +54,13 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "Basic API Clients",
             },
         ),
+        migrations.AlterField(
+            model_name="property",
+            name="identifier",
+            field=models.JSONField(
+                default=dict,
+                help_text="store address information as JSON for use with the HouseCanary API",
+                unique=True,
+            ),
+        ),
     ]

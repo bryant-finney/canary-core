@@ -31,9 +31,9 @@ from requests.models import Response
 try:
     # stdlib
     from typing import TypedDict
-except ImportError:
+except ImportError:  # pragma: no cover
     # third party
-    from typing_extensions import TypedDict
+    from typing_extensions import TypedDict  # pragma: no cover
 
 logger = logging.getLogger(
     __name__ if __name__ != "__main__" else "canary_core.hc_api_connector.models"
@@ -206,6 +206,7 @@ class Property(Model):
     # TODO: migrate to using AddressField from `django-address` some day
     identifier = JSONField(
         default=dict,
+        unique=True,
         help_text=_(
             "store address information as JSON for use with the HouseCanary API"
         ),
