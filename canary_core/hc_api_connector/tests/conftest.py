@@ -69,6 +69,37 @@ def enable_auth_class(settings: SettingsWrapper) -> SettingsWrapper:
     return settings
 
 
+def _get_or_create_client(url: str) -> BasicAPIClient:
+    # BasicAPIClient really does have an `objects` property
+    client, _ = BasicAPIClient.objects.get_or_create(  # pylint: disable=no-member
+        credential_id=CREDENTIAL_ID,
+        defaults=dict(
+            credential_secret=CREDENTIAL_SECRET,
+            host=url,
+            path="/property/details/",
+        ),
+    )
+    return client
+
+
+@pytest.fixture
+def api_client() -> Iterator[BasicAPIClient]:
+    """Get or create a :class:`BasicAPIClient` object.
+
+    After the test, delete it.
+
+    # NOTE: this fixture omits the live server and others required for actual use
+
+    Yields:
+        BasicAPIClient: the test BasicAPIClient record
+    """
+    client = _get_or_create_client("http://localhost")
+    try:
+        yield client
+    finally:
+        client.delete()
+
+
 @pytest.fixture
 def mock_api_client(
     root_urlconf: SettingsWrapper,
@@ -78,6 +109,8 @@ def mock_api_client(
     """Get or create a :class:`BasicAPIClient` object.
 
     After the test, delete it.
+
+    # NOTE: this fixture includes the live server and others required for actual use
 
     Args:
         root_urlconf (SettingsWrapper): depend on this fixture to enable the mock API
@@ -89,15 +122,7 @@ def mock_api_client(
     Yields:
         BasicAPIClient: the test record
     """
-    # BasicAPIClient really does have an `objects` property
-    client, _ = BasicAPIClient.objects.get_or_create(  # pylint: disable=no-member
-        credential_id=CREDENTIAL_ID,
-        defaults=dict(
-            credential_secret=CREDENTIAL_SECRET,
-            host=live_server.url,
-            path="/property/details/",
-        ),
-    )
+    client = _get_or_create_client(live_server.url)
     try:
         yield client
     finally:
