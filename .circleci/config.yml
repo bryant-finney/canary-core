@@ -82,7 +82,7 @@ jobs:
               --tag $COMMIT_TAG \
               --tag $LATEST_TAG \
               --tag app \
-              --labels \
+              --label \
                 org.opencontainers.image.source=https://github.com/bryant-finney/canary-core \
               --cache-from app \
               --target << parameters.target >> \
