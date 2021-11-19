@@ -34,7 +34,7 @@ jobs:
           pre-install-steps:
             - run:
                 name: cleo
-                command: pip3 install --upgrade pip cleo tomlkit poetry-core
+                command: pip3 install --upgrade poetry
       - run:
           name: pre-commit
           # This assumes pytest is installed via the install-package step above
