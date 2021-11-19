@@ -40,6 +40,64 @@ jobs:
           # This assumes pytest is installed via the install-package step above
           command: poetry run pre-commit run --files $(git diff --name-only HEAD~1 | xargs)
 
+  docker-build:
+    parameters:
+      target:
+        type: string
+      dockerfile:
+        type: string
+
+    working_directory: /app
+    environment:
+      DOCKER_IMAGE: ghcr.io/$CIRCLE_PROJECT_REPONAME
+      FULL_COMMIT_TAG: $DOCKER_IMAGE:<< parameters.target >>-${CIRCLE_SHA1:0:8}
+      FULL_LATEST_TAG: $DOCKER_IMAGE:<< parameters.target >>-latest
+
+    docker:
+      - image: docker:17.05.0-ce-git
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build
+              --tag $FULL_COMMIT_TAG
+              --tag $FULL_LATEST_TAG
+              --tag app
+              --cache-from app
+              --target << parameters.target >>
+              --file << parameters.dockerfile >> .
+
+            docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+            docker push $FULL_LATEST_TAG
+            docker push $FULL_COMMIT_TAG
+
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app.tar
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
