@@ -131,7 +131,7 @@ jobs:
                 name: Install poetry using pip
                 command: pip3 install --upgrade poetry
 
-      - run: pytest
+      - run: poetry run pytest
 
     parameters:
       py:
