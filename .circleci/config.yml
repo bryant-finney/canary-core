@@ -34,7 +34,7 @@ jobs:
           pre-install-steps:
             - run:
                 name: cleo
-                command: pip3 install --upgrade pip cleo
+                command: pip3 install --upgrade pip cleo tomlkit
       - run:
           name: pre-commit
           # This assumes pytest is installed via the install-package step above
