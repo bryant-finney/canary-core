@@ -50,8 +50,6 @@ jobs:
 
     working_directory: /app
     environment:
-      DOCKER_COMMIT_VERSION_TAG: << parameters.target >>-${CIRCLE_SHA1:0:8}
-      DOCKER_LATEST_VERSION_TAG: << parameters.target >>-latest
       DOCKER_NAME: << parameters.img_name >>
       DOCKER_REGISTRY: ghcr.io/$CIRCLE_PROJECT_REPONAME
 
@@ -78,15 +76,15 @@ jobs:
           name: Build application Docker image
           command: |
             DOCKER_URI=$DOCKER_REGISTRY${DOCKER_NAME:+/$DOCKER_NAME}
-            COMMIT_TAG=$DOCKER_URI:$DOCKER_COMMIT_VERSION_TAG
-            LATEST_TAG=$DOCKER_URI:$DOCKER_LATEST_VERSION_TAG
+            COMMIT_TAG=$DOCKER_URI:<< parameters.target >>-${CIRCLE_SHA1:0:8}
+            LATEST_TAG=$DOCKER_URI:<< parameters.target >>-latest
 
-            docker build
-              --tag $COMMIT_TAG
-              --tag $LATEST_TAG
-              --tag app
-              --cache-from app
-              --target << parameters.target >>
+            docker build \
+              --tag $COMMIT_TAG \
+              --tag $LATEST_TAG \
+              --tag app \
+              --cache-from app \
+              --target << parameters.target >> \
               --file << parameters.docker_folder >> .
 
             docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
