@@ -114,7 +114,7 @@ jobs:
         auth:
           <<: *auth_dockerhub
 
-      - image: cimg/postgres
+      - image: circleci/postgres:13
         auth:
           <<: *auth_dockerhub
 
