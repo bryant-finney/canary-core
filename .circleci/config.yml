@@ -103,16 +103,46 @@ jobs:
           paths:
             - /caches/app.tar
 
+  tox:
+    docker:
+      - image: cimg/python:<< parameters.py >>
+        environment:
+          DJANGO_SETTINGS_MODULE: canary_core.settings
+          POETRY_VIRTUALENVS_CREATE: "false"
+
+      - image: ghcr.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/db:dev-${CIRCLE_SHA1:0:8}
+        name: db
+        environment:
+          # these environment variables must be configured in project settings
+          POSTGRES_DB: $CANARY_CORE_DB_HOST
+          POSTGRES_PASSWORD: $CANARY_CORE_DB_PASSWORD
+          POSTGRES_USER: $CANARY_CORE_DB_USER
+
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+          pre-install-steps:
+            - run:
+                name: Install poetry using pip
+                command: pip3 install --upgrade poetry
+
+      - run: pytest
+
+    parameters:
+      py:
+        type: string
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  ci\cd: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  ci\cd:
     jobs:
       - pre-commit:
           matrix:
             parameters:
               py: ["3.7", "3.8", "3.9", "3.10"]
+
       - docker build:
           matrix:
             parameters:
@@ -124,3 +154,8 @@ workflows:
               - { docker_folder: api, img_name: db, target: prod }
               - { docker_folder: db, img_name: "", target: dev }
               - { docker_folder: db, img_name: "", target: prod }
+
+      - tox:
+          matrix:
+            parameters:
+              py: ["3.7", "3.8", "3.9", "3.10"]
