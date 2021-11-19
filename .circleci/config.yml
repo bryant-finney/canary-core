@@ -118,18 +118,7 @@ workflows:
               img_name: ["", "db"]
               target: [dev, prod]
             exclude:
-              - docker_folder: api
-                name: db
-                target: dev
-
-              - docker_folder: api
-                name: db
-                target: prod
-
-              - docker_folder: db
-                name: ""
-                target: dev
-
-              - docker_folder: db
-                name: ""
-                target: prod
+              - { docker_folder: api, img_name: db, target: dev }
+              - { docker_folder: api, img_name: db, target: prod }
+              - { docker_folder: db, img_name: "", target: dev }
+              - { docker_folder: db, img_name: "", target: prod }
