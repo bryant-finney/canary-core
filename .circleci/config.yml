@@ -136,6 +136,12 @@ jobs:
 
       - run:
           name: pytest
+          environment:
+            CANARY_CORE_DB_HOST: $CANARY_CORE_DB_HOST
+            CANARY_CORE_DB_PASSWORD: $CANARY_CORE_DB_PASSWORD
+            CANARY_CORE_DB_USER: $CANARY_CORE_DB_USER
+            DJANGO_SETTINGS_MODULE: canary_core.settings
+
           command: poetry run pytest
 
     parameters:
