@@ -86,7 +86,7 @@ jobs:
               --target << parameters.target >> \
               --file ./<< parameters.docker_folder >>/Dockerfile .
 
-            docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+            docker login ghcr.io -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
             docker push $LATEST_TAG
             docker push $COMMIT_TAG
 
