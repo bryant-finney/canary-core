@@ -74,7 +74,7 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            DOCKER_URI=ghcr.io/$CIRCLE_PROJECT_REPONAME${DOCKER_NAME:+/$DOCKER_NAME}
+            DOCKER_URI=ghcr.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME${DOCKER_NAME:+/$DOCKER_NAME}
             COMMIT_TAG=$DOCKER_URI:<< parameters.target >>-${CIRCLE_SHA1:0:8}
             LATEST_TAG=$DOCKER_URI:<< parameters.target >>-latest
 
