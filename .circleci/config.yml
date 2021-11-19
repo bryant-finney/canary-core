@@ -63,18 +63,14 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /caches/app.tar
-
       - run:
-          name: Load Docker image layer cache
+          name: Pull latest images
           command: |
-            set +o pipefail
-            docker load -i /caches/app.tar | true
+            DOCKER_URI=ghcr.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME${DOCKER_NAME:+/$DOCKER_NAME}
+            LATEST_TAG=$DOCKER_URI:<< parameters.target >>-latest
+
+            docker login ghcr.io -u REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+            docker pull $LATEST_TAG
 
       - run:
           name: Build application Docker image
@@ -86,27 +82,15 @@ jobs:
             docker build \
               --tag $COMMIT_TAG \
               --tag $LATEST_TAG \
-              --tag app \
               --label \
                 org.opencontainers.image.source=https://github.com/bryant-finney/canary-core \
-              --cache-from app \
+              --cache-from $LATEST_TAG \
               --target << parameters.target >> \
               --file ./<< parameters.docker_folder >>/Dockerfile .
 
             docker login ghcr.io -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
             docker push $LATEST_TAG
             docker push $COMMIT_TAG
-
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /caches
-            docker save -o /caches/app.tar app
-
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - /caches/app.tar
 
   tox:
     docker:
