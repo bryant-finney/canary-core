@@ -129,6 +129,12 @@ jobs:
                 command: pip3 install --upgrade poetry
 
       - run:
+          name: setup dotenv
+          command: |
+            for var_name in HOST PASSWORD USER NAME; do
+              printf 'CANARY_CORE_DB_%s=%s\n' "${var_name}" "${!var_name}" >>.env
+            done
+      - run:
           name: pytest
           environment:
             DJANGO_SETTINGS_MODULE: canary_core.settings
