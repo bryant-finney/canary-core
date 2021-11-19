@@ -8,6 +8,7 @@
 [![pre-commit: enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Checked with mypy](https://img.shields.io/badge/mypy-checked-blue)](http://mypy-lang.org/)
 [![repo: gitlab](https://img.shields.io/badge/repo-gitlab-violet)](https://gitlab.com/django-canary/core)
+[![CircleCI](https://circleci.com/gh/bryant-finney/canary-core/tree/main.svg?style=shield)](https://circleci.com/gh/bryant-finney/canary-core/tree/main)
 
 Define the `canary_core` Django project for interfacing with the HouseCanary API. This
 project provides a custom Django app for interacting with third-party APIs providing

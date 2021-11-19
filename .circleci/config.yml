@@ -1,0 +1,167 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  # The python orb contains a set of prepackaged CircleCI configuration you can use repeatedly in your configuration files
+  # Orb commands and jobs help you with common scripting around a language/tool
+  # so you dont have to copy and paste it everywhere.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@1.2
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  pre-commit:
+    parameters:
+      py:
+        type: string
+    # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
+    # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
+    # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
+    # The executor is the environment in which the steps below will be executed - below will use a python 3.8 container
+    docker:
+      - image: cimg/python:<< parameters.py >>
+        auth: &auth_dockerhub
+          password: $DOCKER_PASSWORD
+          username: $DOCKER_USERNAME
+
+    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
+    # CircleCI will report the results back to your VCS provider.
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+          pre-install-steps:
+            - run:
+                name: Install poetry using pip
+                command: pip3 install --upgrade poetry
+      - run:
+          name: pre-commit
+          command: poetry run pre-commit run --files $(git diff --name-only HEAD~1 | xargs)
+
+  docker build:
+    parameters:
+      docker_folder:
+        type: string
+      img_name:
+        type: string
+      target:
+        type: string
+
+    working_directory: /app
+    environment:
+      DOCKER_NAME: << parameters.img_name >>
+
+    docker:
+      - image: docker:17.05.0-ce-git
+        auth:
+          <<: *auth_dockerhub
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Pull latest images
+          command: |
+            DOCKER_URI=ghcr.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME${DOCKER_NAME:+/$DOCKER_NAME}
+            LATEST_TAG=$DOCKER_URI:<< parameters.target >>-latest
+
+            docker login ghcr.io -u REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+            docker pull $LATEST_TAG
+
+      - run:
+          name: Build application Docker image
+          command: |
+            DOCKER_URI=ghcr.io/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME${DOCKER_NAME:+/$DOCKER_NAME}
+            COMMIT_TAG=$DOCKER_URI:<< parameters.target >>-${CIRCLE_SHA1:0:8}
+            LATEST_TAG=$DOCKER_URI:<< parameters.target >>-latest
+
+            docker build \
+              --tag $COMMIT_TAG \
+              --tag $LATEST_TAG \
+              --label \
+                org.opencontainers.image.source=https://github.com/bryant-finney/canary-core \
+              --cache-from $LATEST_TAG \
+              --target << parameters.target >> \
+              --file ./<< parameters.docker_folder >>/Dockerfile .
+
+            docker login ghcr.io -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+            docker push $LATEST_TAG
+            docker push $COMMIT_TAG
+
+  tox:
+    docker:
+      - image: cimg/python:<< parameters.py >>
+        auth:
+          <<: *auth_dockerhub
+
+      - image: circleci/postgres:13
+        auth:
+          <<: *auth_dockerhub
+
+        name: db
+        environment:
+          POSTGRES_DB: canary
+          POSTGRES_PASSWORD: dummy
+          POSTGRES_USER: pytest
+
+    environment:
+      CANARY_CORE_DB_HOST: db
+      CANARY_CORE_DB_NAME: canary
+      CANARY_CORE_DB_PASSWORD: dummy
+      CANARY_CORE_DB_USER: pytest
+
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+          pre-install-steps:
+            - run:
+                name: Install poetry using pip
+                command: pip3 install --upgrade poetry
+
+      - run:
+          name: setup dotenv
+          command: |
+            for var_name in HOST PASSWORD USER NAME; do
+              printf 'CANARY_CORE_DB_%s=%s\n' "${var_name}" "${!var_name}" >>.env
+            done
+      - run:
+          name: pytest
+          environment:
+            DJANGO_SETTINGS_MODULE: canary_core.settings
+          command: poetry run pytest
+
+    parameters:
+      py:
+        type: string
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  ci\cd:
+    jobs:
+      - pre-commit:
+          matrix:
+            parameters:
+              py: ["3.7", "3.8", "3.9", "3.10"]
+
+      - docker build:
+          matrix:
+            parameters:
+              docker_folder: [api, db]
+              img_name: ["", "db"]
+              target: [dev, prod]
+            exclude:
+              - { docker_folder: api, img_name: db, target: dev }
+              - { docker_folder: api, img_name: db, target: prod }
+              - { docker_folder: db, img_name: "", target: dev }
+              - { docker_folder: db, img_name: "", target: prod }
+
+      - tox:
+          matrix:
+            parameters:
+              py: ["3.7", "3.8", "3.9", "3.10"]

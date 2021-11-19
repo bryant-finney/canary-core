@@ -3,11 +3,15 @@
 # Created: 2021-11-11 13:11:15
 # Author:  Bryant Finney (https://bryant-finney.github.io/about)
 # -------------------------------------------------------------------------------------
+x-img-src: &img_src
+  org.opencontainers.image.source: ${PROJECT_URL:-https://gitlab.com/django-canary/core}
+
 services:
   db:
     build:
+      labels:
+        <<: *img_src
       context: ./db
-      dockerfile: ./Dockerfile
       target: prod
     environment:
       - POSTGRES_DB
@@ -17,6 +21,8 @@ services:
 
   api:
     build:
+      labels:
+        <<: *img_src
       context: .
       dockerfile: ./api/Dockerfile
       target: prod
