@@ -111,6 +111,10 @@ jobs:
           POETRY_VIRTUALENVS_CREATE: "false"
 
       - image: ghcr.io/bryant-finney/canary-core/db:dev-latest
+        auth:
+          password: $REGISTRY_PASSWORD
+          username: $REGISTRY_USERNAME
+
         name: db
         environment:
           # these environment variables must be configured in project settings
