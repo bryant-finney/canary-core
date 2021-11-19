@@ -33,7 +33,7 @@ jobs:
           pkg-manager: poetry
           pre-install-steps:
             - run:
-                name: cleo
+                name: Install poetry using pip
                 command: pip3 install --upgrade poetry
       - run:
           name: pre-commit
