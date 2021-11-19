@@ -119,6 +119,16 @@ jobs:
           <<: *auth_dockerhub
 
         name: db
+        environment:
+          POSTGRES_DB: canary
+          POSTGRES_PASSWORD: dummy
+          POSTGRES_USER: pytest
+
+    environment:
+      CANARY_CORE_DB_HOST: db
+      CANARY_CORE_DB_NAME: canary
+      CANARY_CORE_DB_PASSWORD: dummy
+      CANARY_CORE_DB_USER: pytest
 
     steps:
       - checkout
