@@ -31,6 +31,8 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: poetry
+          pre-install-steps:
+            - pip3 install --upgrade pip cleo
       - run:
           name: pre-commit
           # This assumes pytest is installed via the install-package step above
