@@ -110,7 +110,7 @@ jobs:
           DJANGO_SETTINGS_MODULE: canary_core.settings
           POETRY_VIRTUALENVS_CREATE: "false"
 
-      - image: ghcr.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/db:dev-${CIRCLE_SHA1:0:8}
+      - image: ghcr.io/bryant-finney/canary-core/db:dev-latest
         name: db
         environment:
           # these environment variables must be configured in project settings
