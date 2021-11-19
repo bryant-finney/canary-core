@@ -51,7 +51,6 @@ jobs:
     working_directory: /app
     environment:
       DOCKER_NAME: << parameters.img_name >>
-      DOCKER_REGISTRY: ghcr.io/$CIRCLE_PROJECT_REPONAME
 
     docker:
       - image: docker:17.05.0-ce-git
@@ -75,7 +74,7 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            DOCKER_URI=$DOCKER_REGISTRY${DOCKER_NAME:+/$DOCKER_NAME}
+            DOCKER_URI=ghcr.io/$CIRCLE_PROJECT_REPONAME${DOCKER_NAME:+/$DOCKER_NAME}
             COMMIT_TAG=$DOCKER_URI:<< parameters.target >>-${CIRCLE_SHA1:0:8}
             LATEST_TAG=$DOCKER_URI:<< parameters.target >>-latest
 
@@ -85,7 +84,7 @@ jobs:
               --tag app \
               --cache-from app \
               --target << parameters.target >> \
-              --file << parameters.docker_folder >> .
+              --file ./<< parameters.docker_folder >>/Dockerfile .
 
             docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
             docker push $LATEST_TAG
