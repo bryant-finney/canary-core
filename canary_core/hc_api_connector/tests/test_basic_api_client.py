@@ -97,6 +97,8 @@ def test_get_request(user: User, basic_api_client: BasicAPIClient) -> None:
     response_data = resp.json()["results"]
     user_data = UserSerializer(instance=[user], many=True).data
 
+    user_data[0]["number_of_legs"] = 3
+
     assert user_data == response_data
 
 
