@@ -18,7 +18,7 @@ django-dotenv = "*"
 Markdown = ">=3.3.4"
 
 [tool.poetry.dev-dependencies]
-black = "^21.9b0"
+black = "^22.3"
 darglint = "*"
 django-extensions = "*"
 django-stubs = "*"
